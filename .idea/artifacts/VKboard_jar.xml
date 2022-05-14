@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="VKboard:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/VKboard_jar</output-path>
+    <root id="archive" name="VKboard.jar">
+      <element id="module-output" name="VKboard" />
+    </root>
+  </artifact>
+</component>
