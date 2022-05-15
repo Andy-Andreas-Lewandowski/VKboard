@@ -4,6 +4,7 @@ import Main.Modell.Enums.Notes;
 import Main.Modell.InstrumentPresets.InstrumentPreset;
 import Main.Modell.Piano.Key;
 import Main.Modell.PianoSettings.PianoSetting;
+import Main.Modell.SequenceChannel;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
@@ -14,8 +15,11 @@ public class Piano {
     PianoSetting setting = new PianoSetting();
     HashMap<Integer, Key> keys;
 
+   public SequenceChannel sequenceChannel = new SequenceChannel();
 
-    public void loadInstrument(InstrumentPreset preset){
+
+
+    public void loadInstrument(InstrumentPreset preset) throws MidiUnavailableException, InvalidMidiDataException {
         keys = new HashMap<Integer, Key>();
         for(Notes note : preset.getNotes()){
             int keyboardCode = setting.notesToKeyboardKey.get(note).getCode();
@@ -28,6 +32,9 @@ public class Piano {
                 throw new RuntimeException(e);
             }
         }
+
+        sequenceChannel.loadInstrument(preset);
+
     }
 
     public void unloadInstrument(){
@@ -37,15 +44,22 @@ public class Piano {
 
     public void play(int keyboardCode){
         if(keys.get(keyboardCode)!=null){
-            keys.get(keyboardCode).play();
+            Notes note = keys.get(keyboardCode).play();
+            if (sequenceChannel.getIsRecording()){
+                sequenceChannel.addNote(note,true);
+            }
         }
     }
 
     public void stop(int keyboardCode){
         if(keys.get(keyboardCode)!=null){
-            keys.get(keyboardCode).stop();
+            Notes note = keys.get(keyboardCode).stop();
+            if (sequenceChannel.getIsRecording()){
+                sequenceChannel.addNote(note,false);
+            }
         }
     }
+
 
 
 }

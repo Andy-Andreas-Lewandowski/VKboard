@@ -5,6 +5,7 @@ import Main.Modell.Enums.Notes;
 import javax.sound.midi.*;
 
 public class Key {
+    Sequencer s = MidiSystem.getSequencer();
     Synthesizer synthesizer;
     Receiver receiver;
     ShortMessage hit;
@@ -25,12 +26,14 @@ public class Key {
         synthesizer.open();
     }
 
-    public void play(){
+    public Notes play(){
         receiver.send(hit,-1);
+        return note;
     }
 
-    public void stop(){
+    public Notes stop(){
         receiver.send(pause,-1);
+        return note;
     }
 
     public void terminate(){
