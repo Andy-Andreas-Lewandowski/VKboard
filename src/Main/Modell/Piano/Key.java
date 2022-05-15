@@ -16,6 +16,7 @@ public class Key {
         this.note = note;
         // Initialize Synth
         synthesizer = MidiSystem.getSynthesizer();
+
         receiver = synthesizer.getReceiver();
 
         // Initialize Messages

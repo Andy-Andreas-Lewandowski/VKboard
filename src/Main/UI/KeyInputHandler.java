@@ -41,7 +41,7 @@ public class KeyInputHandler implements KeyListener {
         } else if (e.getExtendedKeyCode() == 78) {
             root.piano.sequenceChannel.stopRecording();
         }
-        else if (e.getExtendedKeyCode() == 44) {
+        else if (e.getExtendedKeyCode() == 89) {
             root.piano.sequenceChannel.stopPlaying();
         } else if (e.getExtendedKeyCode() == 77) {
             try {

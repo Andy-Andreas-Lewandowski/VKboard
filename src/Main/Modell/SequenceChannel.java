@@ -7,7 +7,6 @@ import Main.Modell.Piano.Key;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -26,26 +25,11 @@ public class SequenceChannel {
         return isRecording;
     }
 
+    //Initializing Elements
+
     public void clear(){
         noteToSequences.clear();
         timeStamps.clear();
-    }
-
-    public void startRecording() throws MidiUnavailableException, InvalidMidiDataException {
-        loadInstrument(instrument);
-        isRecording = true;
-        long timeStamp = System.currentTimeMillis();
-        startingTimeStamp = timeStamp;
-
-        for(Notes key : timeStamps.keySet()){
-            timeStamps.put(key,timeStamp);
-        }
-
-    }
-
-    public void stopRecording(){
-        isRecording = false;
-        recordTime = System.currentTimeMillis() - startingTimeStamp;
     }
 
     public void loadInstrument(InstrumentPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
@@ -59,9 +43,23 @@ public class SequenceChannel {
         }
     }
 
+    //Recording Part
 
+    public void startRecording() throws MidiUnavailableException, InvalidMidiDataException {
+        loadInstrument(instrument);
 
+        long timeStamp = System.currentTimeMillis();
+        startingTimeStamp = timeStamp;
 
+        for(Notes key : timeStamps.keySet()){
+            timeStamps.put(key,timeStamp);
+        }
+        isRecording = true;
+    }
+    public void stopRecording(){
+        isRecording = false;
+        recordTime = System.currentTimeMillis() - startingTimeStamp;
+    }
     public void addNote(Notes note,boolean shouldActivate){
         LinkedList sequence = noteToSequences.get(note);
         Long newTimeStamp = System.currentTimeMillis();
@@ -74,32 +72,26 @@ public class SequenceChannel {
         timeStamps.put(note,newTimeStamp);
     }
 
+
+    // Play sequence Part.
+
     public void playSequence() throws InterruptedException {
         isRecording = false;
         isPlaying = true;
-        while(isPlaying) {
-            ArrayList<Thread> threads = new ArrayList<Thread>();
-            for (Notes key : noteToSequences.keySet()) {
-                PlayKeySequence play = new PlayKeySequence(notesToKey.get(key), noteToSequences.get(key));
-                play.start();
-            }
-            Thread.sleep(recordTime);
-        }
-
+        PlayLoop playLoop = new PlayLoop();
+        playLoop.start();
     }
 
     public void stopPlaying(){
         isPlaying = false;
     }
 
-    public class playLoop extends Thread{
-
+    public class PlayLoop extends Thread{
         @Override
         public void run(){
             isRecording = false;
             isPlaying = true;
             while(isPlaying) {
-                ArrayList<Thread> threads = new ArrayList<Thread>();
                 for (Notes key : noteToSequences.keySet()) {
                     PlayKeySequence play = new PlayKeySequence(notesToKey.get(key), noteToSequences.get(key));
                     play.start();
@@ -136,9 +128,8 @@ public class SequenceChannel {
                 }else if(elem == -2L){
                     key.stop();
                 }
+                if(!isPlaying)return;
             }
         }
-
     }
-
 }

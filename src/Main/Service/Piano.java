@@ -6,8 +6,7 @@ import Main.Modell.Piano.Key;
 import Main.Modell.PianoSettings.PianoSetting;
 import Main.Modell.SequenceChannel;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.*;
 
 import java.util.HashMap;
 
@@ -16,8 +15,13 @@ public class Piano {
     HashMap<Integer, Key> keys;
 
    public SequenceChannel sequenceChannel = new SequenceChannel();
+   Synthesizer metronomSynth;
 
+   public Piano() throws MidiUnavailableException {
+       metronomSynth = MidiSystem.getSynthesizer();
+       for(Instrument instrument : metronomSynth.getAvailableInstruments()){System.out.println(instrument.toString());}
 
+   }
 
     public void loadInstrument(InstrumentPreset preset) throws MidiUnavailableException, InvalidMidiDataException {
         keys = new HashMap<Integer, Key>();
