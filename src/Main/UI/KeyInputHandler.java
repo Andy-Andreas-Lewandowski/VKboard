@@ -27,10 +27,11 @@ public class KeyInputHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (pressedKeys.contains(e.getKeyCode())) return;
-        System.out.println(e.getKeyChar());
-        if (e.getExtendedKeyCode() == 48) {
+        //System.out.println(e.getKeyChar());
+        //System.out.println(e.getKeyCode());
+        if (e.getExtendedKeyCode() == 0) {
             root.piano.unloadInstrument();
-        } else if (e.getExtendedKeyCode() == 66) {
+        } else if (e.getExtendedKeyCode() == 103) {
             try {
                 root.piano.sequenceChannel.startRecording();
             } catch (MidiUnavailableException ex) {
@@ -38,12 +39,12 @@ public class KeyInputHandler implements KeyListener {
             } catch (InvalidMidiDataException ex) {
                 throw new RuntimeException(ex);
             }
-        } else if (e.getExtendedKeyCode() == 78) {
+        } else if (e.getExtendedKeyCode() == 105) {
             root.piano.sequenceChannel.stopRecording();
         }
-        else if (e.getExtendedKeyCode() == 89) {
+        else if (e.getExtendedKeyCode() == 102) {
             root.piano.sequenceChannel.stopPlaying();
-        } else if (e.getExtendedKeyCode() == 77) {
+        } else if (e.getExtendedKeyCode() == 100) {
             try {
                 root.piano.sequenceChannel.playSequence();
             } catch (InterruptedException ex) {

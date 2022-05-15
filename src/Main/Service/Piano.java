@@ -3,7 +3,6 @@ package Main.Service;
 import Main.Modell.Enums.Notes;
 import Main.Modell.InstrumentPresets.InstrumentPreset;
 import Main.Modell.Piano.Key;
-import Main.Modell.PianoSettings.PianoSetting;
 import Main.Modell.SequenceChannel;
 
 import javax.sound.midi.*;
@@ -11,8 +10,8 @@ import javax.sound.midi.*;
 import java.util.HashMap;
 
 public class Piano {
-    PianoSetting setting = new PianoSetting();
     HashMap<Integer, Key> keys;
+    InstrumentPreset preset;
 
    public SequenceChannel sequenceChannel = new SequenceChannel();
    Synthesizer metronomSynth;
@@ -20,15 +19,15 @@ public class Piano {
    public Piano() throws MidiUnavailableException {
        metronomSynth = MidiSystem.getSynthesizer();
        for(Instrument instrument : metronomSynth.getAvailableInstruments()){System.out.println(instrument.toString());}
-
    }
 
     public void loadInstrument(InstrumentPreset preset) throws MidiUnavailableException, InvalidMidiDataException {
-        keys = new HashMap<Integer, Key>();
-        for(Notes note : preset.getNotes()){
-            int keyboardCode = setting.notesToKeyboardKey.get(note).getCode();
+       this.preset = preset;
+       keys = new HashMap<Integer, Key>();
+        for(Integer keyboardCode : preset.keyboardCodesToNotes.keySet()){
             try {
-                Key key = new Key(note, preset.getVelocity(), preset.getBank(), preset.getInstrument());
+                Key key = new Key(preset.keyboardCodesToNotes.get(keyboardCode),
+                                    preset.getVelocity(), preset.getBank(), preset.getInstrument());
                 keys.put(keyboardCode,key);
             } catch (MidiUnavailableException e) {
                 throw new RuntimeException(e);

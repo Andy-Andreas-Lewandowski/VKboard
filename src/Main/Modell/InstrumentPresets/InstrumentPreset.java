@@ -1,13 +1,16 @@
 package Main.Modell.InstrumentPresets;
 
+import Main.Modell.Enums.KeyboardCodes;
 import Main.Modell.Enums.Notes;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class InstrumentPreset {
     int velocity;
     int bank;
     int instrument;
 
+    public HashMap<Integer,Notes> keyboardCodesToNotes;
     ArrayList<Notes> notes = new ArrayList<Notes>();
 
     public int getVelocity(){return velocity;}
