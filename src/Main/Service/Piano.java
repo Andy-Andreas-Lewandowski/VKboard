@@ -1,6 +1,7 @@
 package Main.Service;
 
 import Main.Modell.Enums.Notes;
+import Main.Modell.InstrumentPresets.GrandPiano;
 import Main.Modell.InstrumentPresets.InstrumentPreset;
 import Main.Modell.Piano.Key;
 import Main.Modell.SequenceChannel;
@@ -22,6 +23,11 @@ public class Piano {
     public int seqChannelSelectIndex = 0;
     public SequenceChannel selectedSequenceChannel = new SequenceChannel();
 
+    public Piano(){
+        System.out.println(selectedSequenceChannel);
+        System.out.println(instruments);
+
+    }
 
     public void nextSequenceChannel(){
         if(selectedSequenceChannel.getIsRecording()){

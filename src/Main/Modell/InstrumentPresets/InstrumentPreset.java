@@ -10,7 +10,7 @@ public abstract class InstrumentPreset {
     int bank;
     int instrument;
 
-    String name;
+    String name = "";
 
     public HashMap<Integer,Notes> keyboardCodesToNotes;
     ArrayList<Notes> notes = new ArrayList<Notes>();
