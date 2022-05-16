@@ -10,6 +10,8 @@ public abstract class InstrumentPreset {
     int bank;
     int instrument;
 
+    String name;
+
     public HashMap<Integer,Notes> keyboardCodesToNotes;
     ArrayList<Notes> notes = new ArrayList<Notes>();
 
@@ -18,6 +20,8 @@ public abstract class InstrumentPreset {
     public int getInstrument(){return instrument;}
     public ArrayList<Notes> getNotes(){return notes;}
 
-
+    public String toString(){
+        return name;
+    }
 
 }

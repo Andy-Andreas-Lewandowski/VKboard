@@ -7,19 +7,38 @@ import Main.Modell.SequenceChannel;
 
 import javax.sound.midi.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Piano {
     HashMap<Integer, Key> keys;
+
+    ArrayList<InstrumentPreset> instruments = new ArrayList<>();
+    int insSelectIndex = 0;
     InstrumentPreset preset;
 
-   public SequenceChannel sequenceChannel = new SequenceChannel();
-   Synthesizer metronomSynth;
 
-   public Piano() throws MidiUnavailableException {
-       metronomSynth = MidiSystem.getSynthesizer();
-       for(Instrument instrument : metronomSynth.getAvailableInstruments()){System.out.println(instrument.toString());}
-   }
+    public ArrayList<SequenceChannel> sequenceChannels = new ArrayList<>();
+    public int seqChannelSelectIndex = 0;
+    public SequenceChannel selectedSequenceChannel = new SequenceChannel();
+
+
+    public void nextSequenceChannel(){
+        if(selectedSequenceChannel.getIsRecording()){
+            System.out.println("Can't change Channel while it is recording!");
+            return;
+        }
+        selectedSequenceChannel = sequenceChannels.get(seqChannelSelectIndex);
+        System.out.println("Sequencer " + seqChannelSelectIndex + " selected.");
+        seqChannelSelectIndex = (seqChannelSelectIndex + 1) % sequenceChannels.size();
+    }
+
+    public void nextInstrument() throws MidiUnavailableException, InvalidMidiDataException {
+        loadInstrument(instruments.get(insSelectIndex));
+        System.out.println("Instrument " + instruments.get(insSelectIndex).toString() + " selected.");
+        insSelectIndex = (insSelectIndex + 1) % instruments.size();
+
+    }
 
     public void loadInstrument(InstrumentPreset preset) throws MidiUnavailableException, InvalidMidiDataException {
        this.preset = preset;
@@ -36,9 +55,12 @@ public class Piano {
             }
         }
 
-        sequenceChannel.loadInstrument(preset);
-
     }
+
+    public void connectInstrumentToSequencer() throws MidiUnavailableException, InvalidMidiDataException {
+        selectedSequenceChannel.loadInstrument(preset);
+    }
+
 
     public void unloadInstrument(){
         for(Key key : keys.values()){key.terminate();}
@@ -48,8 +70,8 @@ public class Piano {
     public void play(int keyboardCode){
         if(keys.get(keyboardCode)!=null){
             Notes note = keys.get(keyboardCode).play();
-            if (sequenceChannel.getIsRecording()){
-                sequenceChannel.addNote(note,true);
+            if (selectedSequenceChannel.getIsRecording()){
+                selectedSequenceChannel.addNote(note,true);
             }
         }
     }
@@ -57,8 +79,8 @@ public class Piano {
     public void stop(int keyboardCode){
         if(keys.get(keyboardCode)!=null){
             Notes note = keys.get(keyboardCode).stop();
-            if (sequenceChannel.getIsRecording()){
-                sequenceChannel.addNote(note,false);
+            if (selectedSequenceChannel.getIsRecording()){
+                selectedSequenceChannel.addNote(note,false);
             }
         }
     }

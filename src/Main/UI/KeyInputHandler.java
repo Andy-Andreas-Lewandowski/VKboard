@@ -1,6 +1,8 @@
 package Main.UI;
 
 
+import Main.Modell.SequenceChannel;
+import Main.Service.Piano;
 import Main.Service.RootService;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -26,30 +28,60 @@ public class KeyInputHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        Piano piano = root.piano;
+        SequenceChannel seqChannel = piano.selectedSequenceChannel;
+
         if (pressedKeys.contains(e.getKeyCode())) return;
-        //System.out.println(e.getKeyChar());
-        //System.out.println(e.getKeyCode());
-        if (e.getExtendedKeyCode() == 0) {
-            root.piano.unloadInstrument();
-        } else if (e.getExtendedKeyCode() == 103) {
+        // Num 1 - Start recording on selected Channel.
+        if (e.getExtendedKeyCode() == 97) {
             try {
-                root.piano.sequenceChannel.startRecording();
+                if (seqChannel.getIsRecording()) {
+                    seqChannel.stopRecording();
+                } else {
+                    seqChannel.startRecording();
+                }
             } catch (MidiUnavailableException ex) {
                 throw new RuntimeException(ex);
             } catch (InvalidMidiDataException ex) {
                 throw new RuntimeException(ex);
             }
-        } else if (e.getExtendedKeyCode() == 105) {
-            root.piano.sequenceChannel.stopRecording();
-        }
-        else if (e.getExtendedKeyCode() == 102) {
-            root.piano.sequenceChannel.stopPlaying();
-        } else if (e.getExtendedKeyCode() == 100) {
+        } else if (e.getExtendedKeyCode() == 98) {
             try {
-                root.piano.sequenceChannel.playSequence();
-            } catch (InterruptedException ex) {
+                piano.connectInstrumentToSequencer();
+            } catch (MidiUnavailableException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvalidMidiDataException ex) {
                 throw new RuntimeException(ex);
             }
+            // Num 3 - Clear selected Channel.
+        } else if (e.getExtendedKeyCode() == 99) {
+            seqChannel.clear();
+        //Num 4 - Play selected Channel.
+        } else if (e.getExtendedKeyCode() == 100) {
+            if(seqChannel.isPlaying()){
+                seqChannel.stopPlaying();
+            }else{
+                try {
+                    seqChannel.playSequence();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        //Num 6 - Play all Channels. TODO
+        else if (e.getExtendedKeyCode() == 102) {}
+        //Num 7 - Select Instrument.
+        else if (e.getExtendedKeyCode() == 103) {
+            try {
+                piano.nextInstrument();
+            } catch (MidiUnavailableException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvalidMidiDataException ex) {
+                throw new RuntimeException(ex);
+            }
+        // Num 9 - Change Sequence
+        }else if(e.getExtendedKeyCode() == 105){
+            piano.nextSequenceChannel();
         }else{
             root.piano.play(e.getKeyCode());
         }

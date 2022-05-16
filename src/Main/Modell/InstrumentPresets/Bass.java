@@ -8,6 +8,7 @@ public class Bass extends InstrumentPreset {
         velocity = 100;
         bank = 0;
         instrument = 29;
+        name = "Bass";
         keyboardCodesToNotes = KeysToScaleBindings.getGuitarBindings();
         for(Notes note : keyboardCodesToNotes.values())notes.add(note);
     }

@@ -5,8 +5,7 @@ import Main.Modell.InstrumentPresets.InstrumentPreset;
 import Main.Modell.Piano.Key;
 
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -21,15 +20,20 @@ public class SequenceChannel {
     Long startingTimeStamp = 0L;
     InstrumentPreset instrument;
 
+
     public boolean getIsRecording(){
         return isRecording;
     }
 
+    public boolean isPlaying() {return isPlaying;}
     //Initializing Elements
 
     public void clear(){
+        stopPlaying();
+        stopRecording();
         noteToSequences.clear();
         timeStamps.clear();
+        System.out.println("Sequence Channel is cleared!");
     }
 
     public void loadInstrument(InstrumentPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
@@ -41,13 +45,16 @@ public class SequenceChannel {
             Key key = new Key(note, instrument.getVelocity(), instrument.getBank(), instrument.getInstrument());
             notesToKey.put(note,key);
         }
+        System.out.println("Instrument " + instrument.toString() + " is connected to Sequence!");
     }
 
     //Recording Part
 
     public void startRecording() throws MidiUnavailableException, InvalidMidiDataException {
-        loadInstrument(instrument);
-
+        if(instrument == null){
+            System.out.println("Please connect an Instrument with this Channel first!");
+            return;
+        }
         long timeStamp = System.currentTimeMillis();
         startingTimeStamp = timeStamp;
 
@@ -55,10 +62,12 @@ public class SequenceChannel {
             timeStamps.put(key,timeStamp);
         }
         isRecording = true;
+        System.out.println("Recording started!");
     }
     public void stopRecording(){
         isRecording = false;
         recordTime = System.currentTimeMillis() - startingTimeStamp;
+        System.out.println("Recording stopped!");
     }
     public void addNote(Notes note,boolean shouldActivate){
         LinkedList sequence = noteToSequences.get(note);
@@ -76,14 +85,16 @@ public class SequenceChannel {
     // Play sequence Part.
 
     public void playSequence() throws InterruptedException {
-        isRecording = false;
+        stopRecording();
         isPlaying = true;
         PlayLoop playLoop = new PlayLoop();
         playLoop.start();
+        System.out.println("Sequence started playing!");
     }
 
     public void stopPlaying(){
         isPlaying = false;
+        System.out.println("Sequence stopped playing!");
     }
 
     public class PlayLoop extends Thread{
