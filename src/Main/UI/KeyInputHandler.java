@@ -69,7 +69,11 @@ public class KeyInputHandler implements KeyListener {
             }
         }
         //Num 6 - Play all Channels. TODO
-        else if (e.getExtendedKeyCode() == 102) {}
+        else if (e.getExtendedKeyCode() == 102) {
+            if(piano.areAllSeqPlaying) piano.stopAllSeq();
+            else piano.playAllSeq();
+
+        }
         //Num 7 - Select Instrument.
         else if (e.getExtendedKeyCode() == 103) {
             try {
@@ -80,8 +84,12 @@ public class KeyInputHandler implements KeyListener {
                 throw new RuntimeException(ex);
             }
         // Num 9 - Change Sequence
-        }else if(e.getExtendedKeyCode() == 105){
+        }else if(e.getExtendedKeyCode() == 105) {
             piano.nextSequenceChannel();
+            //Num . - Start/Stop Metronome
+        } else if (e.getExtendedKeyCode() == 110) {
+            if(piano.metronome.getIsPlaying())piano.metronome.stop();
+            else piano.metronome.start();
         }else{
             root.piano.play(e.getKeyCode());
         }
@@ -92,7 +100,10 @@ public class KeyInputHandler implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         pressedKeys.remove(e.getKeyCode());
-        root.piano.stop(e.getKeyCode());
-
+        try {
+            root.piano.stop(e.getKeyCode());
+        } catch (InvalidMidiDataException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

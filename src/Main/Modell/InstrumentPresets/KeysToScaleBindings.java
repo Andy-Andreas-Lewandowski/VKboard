@@ -8,7 +8,26 @@ import java.util.HashMap;
 public class KeysToScaleBindings {
 
 
-    public static HashMap<Integer,Notes> getPianoLeftHand(){
+    public static HashMap<Integer,Notes> getPianoLeftC2(){
+        HashMap<Integer,Notes> notesToKeyboardKey = new HashMap<Integer, Notes>();
+
+        notesToKeyboardKey.put(KeyboardCodes.Q.getCode(),Notes.C2);
+        notesToKeyboardKey.put(KeyboardCodes.TWO.getCode(),Notes.CS2);
+        notesToKeyboardKey.put(KeyboardCodes.W.getCode(),Notes.D2);
+        notesToKeyboardKey.put(KeyboardCodes.THREE.getCode(),Notes.DS2);
+        notesToKeyboardKey.put(KeyboardCodes.E.getCode(),Notes.E2);
+        notesToKeyboardKey.put(KeyboardCodes.R.getCode(),Notes.F2);
+        notesToKeyboardKey.put(KeyboardCodes.FIVE.getCode(),Notes.FS2);
+        notesToKeyboardKey.put(KeyboardCodes.T.getCode(),Notes.G2);
+        notesToKeyboardKey.put(KeyboardCodes.SIX.getCode(),Notes.GS2);
+        notesToKeyboardKey.put(KeyboardCodes.Y.getCode(),Notes.A2);
+        notesToKeyboardKey.put(KeyboardCodes.SEVEN.getCode(),Notes.AS2);
+        notesToKeyboardKey.put(KeyboardCodes.U.getCode(),Notes.B2);
+
+        return notesToKeyboardKey;
+    }
+
+    public static HashMap<Integer,Notes> getPianoLeftC3(){
         HashMap<Integer,Notes> notesToKeyboardKey = new HashMap<Integer, Notes>();
 
         notesToKeyboardKey.put(KeyboardCodes.Q.getCode(),Notes.C3);
@@ -27,7 +46,27 @@ public class KeysToScaleBindings {
         return notesToKeyboardKey;
     }
 
-    public static HashMap<Integer,Notes> getPianoRighttHand(){
+
+    public static HashMap<Integer,Notes> getPianoRightC3(){
+        HashMap<Integer,Notes> notesToKeyboardKey = new HashMap<Integer, Notes>();
+
+        notesToKeyboardKey.put(KeyboardCodes.V.getCode(),Notes.C3);
+        notesToKeyboardKey.put(KeyboardCodes.G.getCode(),Notes.CS3);
+        notesToKeyboardKey.put(KeyboardCodes.B.getCode(),Notes.D3);
+        notesToKeyboardKey.put(KeyboardCodes.H.getCode(),Notes.DS3);
+        notesToKeyboardKey.put(KeyboardCodes.N.getCode(),Notes.E3);
+        notesToKeyboardKey.put(KeyboardCodes.M.getCode(),Notes.F3);
+        notesToKeyboardKey.put(KeyboardCodes.K.getCode(),Notes.FS3);
+        notesToKeyboardKey.put(KeyboardCodes.KOMMA.getCode(),Notes.G3);
+        notesToKeyboardKey.put(KeyboardCodes.L.getCode(),Notes.GS3);
+        notesToKeyboardKey.put(KeyboardCodes.PERIOD.getCode(),Notes.A3);
+        notesToKeyboardKey.put(KeyboardCodes.SEMICOLON.getCode(),Notes.AS3);
+        notesToKeyboardKey.put(KeyboardCodes.SLASH.getCode(),Notes.B3);
+
+        return notesToKeyboardKey;
+    }
+
+    public static HashMap<Integer,Notes> getPianoRightC4(){
         HashMap<Integer,Notes> notesToKeyboardKey = new HashMap<Integer, Notes>();
 
         notesToKeyboardKey.put(KeyboardCodes.V.getCode(),Notes.C4);

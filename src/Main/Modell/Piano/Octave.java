@@ -13,7 +13,6 @@ public class Octave {
     LinkedList<ShortMessage> messages = new LinkedList<>();
     HashMap<Notes,ShortMessage> noteToMessage = new HashMap<Notes, ShortMessage>();
 
-
     public Octave() throws MidiUnavailableException {
         synthesizer = MidiSystem.getSynthesizer();
         synthesizer.open();
@@ -24,17 +23,52 @@ public class Octave {
         }
     }
 
-    public void loadInstrument(InstrumentPreset preset, Collection<Notes> notes){
+    public void loadInstrument(InstrumentPreset preset, Collection<Notes> notes) throws InvalidMidiDataException {
+        //Initialize
         this.preset = preset;
+        //Clear Hashmap
+        noteToMessage.clear();
+        // Set messages
         int channel = 0;
-        Iterator nxtMsg = messages.iterator();
-        for(Notes note : notes){
+        MidiChannel[] channels = synthesizer.getChannels();
+        Iterator<ShortMessage> nxtMsg = messages.iterator();
+        for(Notes note : notes) {
+            //Set Message per Channel
+            ShortMessage msg = nxtMsg.next();
+            msg.setMessage(ShortMessage.NOTE_ON, channel, note.getCode(), preset.getVelocity());
+            noteToMessage.put(note, msg);
+            //Set instrument in Channel
+            channels[channel].programChange(preset.getBank(), preset.getInstrument());
+
+            channel++;
+            // Skip drum channel
+            if (channel == 9) channel++;
+
+
 
         }
 
 
-
     }
 
+    public boolean play(Notes note){
+        ShortMessage msg = noteToMessage.get(note);
+        if(msg != null){
+            receiver.send(msg,-1);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean stop(Notes note) throws InvalidMidiDataException {
+        ShortMessage msg = noteToMessage.get(note);
+        if(msg != null){
+            ShortMessage off = new ShortMessage();
+            off.setMessage(ShortMessage.NOTE_ON, msg.getChannel(),msg.getData1(),0);
+            receiver.send(off,-1);
+            return true;
+        }
+        return false;
+    }
 
 }

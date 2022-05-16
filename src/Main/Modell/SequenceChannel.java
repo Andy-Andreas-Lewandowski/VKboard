@@ -2,10 +2,12 @@ package Main.Modell;
 
 import Main.Modell.Enums.Notes;
 import Main.Modell.InstrumentPresets.InstrumentPreset;
-import Main.Modell.Piano.Key;
+
+import Main.Modell.Piano.Octave;
 
 
 import javax.sound.midi.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -14,9 +16,11 @@ public class SequenceChannel {
     boolean isPlaying = false;
     HashMap<Notes,LinkedList<Long>> noteToSequences = new HashMap<Notes,LinkedList<Long>>();
     HashMap<Notes, Long> timeStamps = new HashMap<Notes, Long>();
-    HashMap<Notes, Key> notesToKey = new HashMap<Notes, Key>();
+    HashMap<Notes, Octave> notesToOctave = new HashMap<Notes, Octave>();
 
-    Long recordTime = 0L;
+    ArrayList<Octave> octaves = new ArrayList<>();
+
+    public Long recordTime = 0L;
     Long startingTimeStamp = 0L;
     InstrumentPreset instrument;
 
@@ -26,7 +30,7 @@ public class SequenceChannel {
     }
 
     public boolean isPlaying() {return isPlaying;}
-    //Initializing Elements
+
 
     public void clear(){
         stopPlaying();
@@ -36,22 +40,26 @@ public class SequenceChannel {
         System.out.println("Sequence Channel is cleared!");
     }
     public SequenceChannel() throws MidiUnavailableException, InvalidMidiDataException {
-        for(int i = 0; i < 24; i++){
-            notesToKey.put(Notes.C3,new Key());
-        }
+        octaves.add(new Octave());
+        octaves.add(new Octave());
     }
 
     public void loadInstrument(InstrumentPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
         clear();
         this.instrument = instrument;
-        LinkedList<Key> keys = (LinkedList<Key>) notesToKey.values();
-        notesToKey.clear();
-        for(Notes note : instrument.getNotes()){
+        notesToOctave.clear();
+
+        for(Notes note : instrument.lowerOctave.values()){
             noteToSequences.put(note,new LinkedList());
+            notesToOctave.put(note,octaves.get(0));
             timeStamps.put(note,0L);
-            Key key = keys.pop();
-            key.setKey(note,instrument.getVelocity(),instrument.getBank(),instrument.getInstrument());
-            notesToKey.put(note,key);
+            octaves.get(0).loadInstrument(instrument,instrument.lowerOctave.values());
+        }
+        for(Notes note : instrument.upperOctave.values()){
+            noteToSequences.put(note,new LinkedList());
+            notesToOctave.put(note,octaves.get(1));
+            timeStamps.put(note,0L);
+            octaves.get(1).loadInstrument(instrument,instrument.upperOctave.values());
         }
         System.out.println("Instrument " + instrument.toString() + " is connected to Sequence!");
     }
@@ -92,12 +100,13 @@ public class SequenceChannel {
 
     // Play sequence Part.
 
-    public void playSequence() throws InterruptedException {
+    public PlayLoop playSequence() throws InterruptedException {
         stopRecording();
         isPlaying = true;
         PlayLoop playLoop = new PlayLoop();
         playLoop.start();
         System.out.println("Sequence started playing!");
+        return playLoop;
     }
 
     public void stopPlaying(){
@@ -112,7 +121,7 @@ public class SequenceChannel {
             isPlaying = true;
             while(isPlaying) {
                 for (Notes key : noteToSequences.keySet()) {
-                    PlayKeySequence play = new PlayKeySequence(notesToKey.get(key), noteToSequences.get(key));
+                    PlayKeySequence play = new PlayKeySequence(key, notesToOctave.get(key), noteToSequences.get(key));
                     play.start();
                 }
                 try {
@@ -126,11 +135,14 @@ public class SequenceChannel {
 
 
     public class PlayKeySequence extends Thread{
-        Key key;
+        Octave octave;
+        Notes note;
         LinkedList<Long> sequence;
-        public PlayKeySequence(Key key,LinkedList<Long> sequence){
+
+        public PlayKeySequence(Notes note, Octave octave,LinkedList<Long> sequence){
             this.sequence = sequence;
-            this.key = key;
+            this.octave = octave;
+            this.note = note;
         }
 
         @Override
@@ -143,9 +155,10 @@ public class SequenceChannel {
                         throw new RuntimeException(e);
                     }
                 }else if(elem == -1L){
-                    key.play();
+                    octave.play(note);
                 }else if(elem == -2L){
-                    key.stop();
+                    try {octave.stop(note);}
+                    catch (InvalidMidiDataException e) {throw new RuntimeException(e);}
                 }
                 if(!isPlaying)return;
             }

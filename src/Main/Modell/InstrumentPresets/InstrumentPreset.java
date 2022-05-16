@@ -12,7 +12,9 @@ public abstract class InstrumentPreset {
 
     String name;
 
-    public HashMap<Integer,Notes> keyboardCodesToNotes;
+    public HashMap<Integer,Notes> lowerOctave;
+    public HashMap<Integer,Notes> upperOctave;
+
     ArrayList<Notes> notes = new ArrayList<Notes>();
 
     public int getVelocity(){return velocity;}

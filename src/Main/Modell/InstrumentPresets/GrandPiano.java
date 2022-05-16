@@ -1,17 +1,16 @@
 package Main.Modell.InstrumentPresets;
 
-import Main.Modell.Enums.Notes;
-
 public class GrandPiano extends InstrumentPreset {
 
     public GrandPiano(){
-        velocity = 100;
+        velocity = 20;
         bank = 1024;
         instrument = 0;
         name = "Grand Piano";
-        keyboardCodesToNotes = KeysToScaleBindings.getPianoBindings();
-        for(Notes note : keyboardCodesToNotes.values())notes.add(note);
+        lowerOctave = KeysToScaleBindings.getPianoLeftC3();
+        upperOctave = KeysToScaleBindings.getPianoRightC4();
 
     }
-
 }
+//bank = 1024;
+//        instrument = 0;
