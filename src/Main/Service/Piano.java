@@ -1,5 +1,6 @@
 package Main.Service;
 
+import Main.Modell.Enums.KeyboardCodes;
 import Main.Modell.Enums.Notes;
 import Main.Modell.InstrumentPresets.InstrumentPreset;
 import Main.Modell.Piano.Key;
@@ -7,11 +8,13 @@ import Main.Modell.SequenceChannel;
 
 import javax.sound.midi.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Piano {
-    HashMap<Integer, Key> keys;
+    HashMap<Integer, Key> keyboardCodeToKeys = new HashMap<>();
 
     ArrayList<InstrumentPreset> instruments = new ArrayList<>();
     int insSelectIndex = 0;
@@ -21,7 +24,19 @@ public class Piano {
     public ArrayList<SequenceChannel> sequenceChannels = new ArrayList<>();
     public int seqChannelSelectIndex = 0;
     public SequenceChannel selectedSequenceChannel = new SequenceChannel();
+    public Piano() throws MidiUnavailableException, InvalidMidiDataException {
+        for(int i = 0 ; i < 26 ; i++){
+            try {
+                Key key = new Key();
+                keyboardCodeToKeys.put(0, key);
+            } catch (MidiUnavailableException e) {
+                throw new RuntimeException(e);
+            } catch (InvalidMidiDataException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
+    }
 
     public void nextSequenceChannel(){
         if(selectedSequenceChannel.getIsRecording()){
@@ -42,17 +57,15 @@ public class Piano {
 
     public void loadInstrument(InstrumentPreset preset) throws MidiUnavailableException, InvalidMidiDataException {
        this.preset = preset;
-       keys = new HashMap<Integer, Key>();
-        for(Integer keyboardCode : preset.keyboardCodesToNotes.keySet()){
-            try {
-                Key key = new Key(preset.keyboardCodesToNotes.get(keyboardCode),
-                                    preset.getVelocity(), preset.getBank(), preset.getInstrument());
-                keys.put(keyboardCode,key);
-            } catch (MidiUnavailableException e) {
-                throw new RuntimeException(e);
-            } catch (InvalidMidiDataException e) {
-                throw new RuntimeException(e);
-            }
+       LinkedList<Key> keys = new LinkedList<>();
+       for(Key key : keyboardCodeToKeys.values() ) keys.add(key);
+       keyboardCodeToKeys.clear();
+       for(Integer keyboardCode : preset.keyboardCodesToNotes.keySet()){
+           Key key = keys.pop();
+           key.setKey(preset.keyboardCodesToNotes.get(keyboardCode), preset.getVelocity(), preset.getBank(), preset.getInstrument());
+           keyboardCodeToKeys.put(keyboardCode,key);
+
+
         }
 
     }
@@ -63,13 +76,13 @@ public class Piano {
 
 
     public void unloadInstrument(){
-        for(Key key : keys.values()){key.terminate();}
-        keys.clear();
+        for(Key key : keyboardCodeToKeys.values()){key.terminate();}
+        keyboardCodeToKeys.clear();
     }
 
     public void play(int keyboardCode){
-        if(keys.get(keyboardCode)!=null){
-            Notes note = keys.get(keyboardCode).play();
+        if(keyboardCodeToKeys.get(keyboardCode)!=null){
+            Notes note = keyboardCodeToKeys.get(keyboardCode).play();
             if (selectedSequenceChannel.getIsRecording()){
                 selectedSequenceChannel.addNote(note,true);
             }
@@ -77,8 +90,8 @@ public class Piano {
     }
 
     public void stop(int keyboardCode){
-        if(keys.get(keyboardCode)!=null){
-            Notes note = keys.get(keyboardCode).stop();
+        if(keyboardCodeToKeys.get(keyboardCode)!=null){
+            Notes note = keyboardCodeToKeys.get(keyboardCode).stop();
             if (selectedSequenceChannel.getIsRecording()){
                 selectedSequenceChannel.addNote(note,false);
             }

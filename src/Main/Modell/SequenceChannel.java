@@ -35,14 +35,22 @@ public class SequenceChannel {
         timeStamps.clear();
         System.out.println("Sequence Channel is cleared!");
     }
+    public SequenceChannel() throws MidiUnavailableException, InvalidMidiDataException {
+        for(int i = 0; i < 24; i++){
+            notesToKey.put(Notes.C3,new Key());
+        }
+    }
 
     public void loadInstrument(InstrumentPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
         clear();
         this.instrument = instrument;
+        LinkedList<Key> keys = (LinkedList<Key>) notesToKey.values();
+        notesToKey.clear();
         for(Notes note : instrument.getNotes()){
             noteToSequences.put(note,new LinkedList());
             timeStamps.put(note,0L);
-            Key key = new Key(note, instrument.getVelocity(), instrument.getBank(), instrument.getInstrument());
+            Key key = keys.pop();
+            key.setKey(note,instrument.getVelocity(),instrument.getBank(),instrument.getInstrument());
             notesToKey.put(note,key);
         }
         System.out.println("Instrument " + instrument.toString() + " is connected to Sequence!");

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public enum Notes {
 
     // 3rd Octave
+    NONE(0),
     C1(36),CS1(37),D1(38),DS1(39),E1(40),F1(41),FS1(42),G1(43),
     GS1(44),A1(45),AS1(46),B1(47),
     C2(48),CS2(49),D2(50),DS2(51),E2(52),F2(53),FS2(54),G2(55),

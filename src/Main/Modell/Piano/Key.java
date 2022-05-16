@@ -12,26 +12,30 @@ public class Key {
     ShortMessage pause;
     Notes note;
 
-    public Key(Notes note, int velocity, int bank, int instrument) throws MidiUnavailableException, InvalidMidiDataException {
+    public Key() throws MidiUnavailableException, InvalidMidiDataException {
         this.note = note;
         // Initialize Synth
         synthesizer = MidiSystem.getSynthesizer();
         synthesizer.open();
 
-        // Change Instrument
-        Soundbank soundBank = synthesizer.getDefaultSoundbank();
-        MidiChannel[] channels = synthesizer.getChannels();
-        channels[0].programChange(bank,instrument);
 
 
         receiver = synthesizer.getReceiver();
+
+
+
+
+    }
+
+    public void setKey(Notes note, int velocity, int bank, int instrument) throws InvalidMidiDataException {
+        // Change Instrument
+        MidiChannel[] channels = synthesizer.getChannels();
+        channels[0].programChange(bank,instrument);
 
         // Initialize Messages
         hit = new ShortMessage();
         hit.setMessage(ShortMessage.NOTE_ON,0,note.getCode(),velocity);
         pause = new ShortMessage(ShortMessage.NOTE_OFF,0,note.getCode(),velocity);
-
-
     }
 
     public Notes play(){

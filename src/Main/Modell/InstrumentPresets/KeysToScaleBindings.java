@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class KeysToScaleBindings {
 
 
-    public static HashMap<Integer,Notes> getPianoBindings(){
+    public static HashMap<Integer,Notes> getPianoLeftHand(){
         HashMap<Integer,Notes> notesToKeyboardKey = new HashMap<Integer, Notes>();
 
         notesToKeyboardKey.put(KeyboardCodes.Q.getCode(),Notes.C3);
@@ -23,6 +23,12 @@ public class KeysToScaleBindings {
         notesToKeyboardKey.put(KeyboardCodes.Y.getCode(),Notes.A3);
         notesToKeyboardKey.put(KeyboardCodes.SEVEN.getCode(),Notes.AS3);
         notesToKeyboardKey.put(KeyboardCodes.U.getCode(),Notes.B3);
+
+        return notesToKeyboardKey;
+    }
+
+    public static HashMap<Integer,Notes> getPianoRighttHand(){
+        HashMap<Integer,Notes> notesToKeyboardKey = new HashMap<Integer, Notes>();
 
         notesToKeyboardKey.put(KeyboardCodes.V.getCode(),Notes.C4);
         notesToKeyboardKey.put(KeyboardCodes.G.getCode(),Notes.CS4);
@@ -39,6 +45,7 @@ public class KeysToScaleBindings {
 
         return notesToKeyboardKey;
     }
+
 
     public static HashMap<Integer,Notes> getGuitarBindings(){
         HashMap<Integer,Notes> notesToKeyboardKey = new HashMap<Integer, Notes>();
