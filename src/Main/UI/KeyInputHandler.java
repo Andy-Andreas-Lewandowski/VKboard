@@ -29,7 +29,7 @@ public class KeyInputHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         Piano piano = root.piano;
-        SequenceChannel seqChannel = piano.selectedSequenceChannel;
+        SequenceChannel seqChannel = piano.sequenceChannelSelected;
 
         if (pressedKeys.contains(e.getKeyCode())) return;
         // Num 1 - Start recording on selected Channel.

@@ -10,6 +10,9 @@ import javax.sound.midi.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class SequenceChannel {
     boolean isRecording = false;
@@ -20,7 +23,7 @@ public class SequenceChannel {
 
     ArrayList<Octave> octaves = new ArrayList<>();
 
-    public Long recordTime = 0L;
+    Long recordTime = 0L;
     Long startingTimeStamp = 0L;
     InstrumentPreset instrument;
 
@@ -31,10 +34,12 @@ public class SequenceChannel {
 
     public boolean isPlaying() {return isPlaying;}
 
+    public Long getRecordTime() {
+        return recordTime;
+    }
 
     public void clear(){
-        stopPlaying();
-        stopRecording();
+        if(isRecording || isPlaying){System.out.println("Can't clear while recording or playing.");}
         noteToSequences.clear();
         timeStamps.clear();
         System.out.println("Sequence Channel is cleared!");
@@ -71,18 +76,35 @@ public class SequenceChannel {
             System.out.println("Please connect an Instrument with this Channel first!");
             return;
         }
-        long timeStamp = System.currentTimeMillis();
+        long timeStamp = System.currentTimeMillis() + 20;
         startingTimeStamp = timeStamp;
 
         for(Notes key : timeStamps.keySet()){
             timeStamps.put(key,timeStamp);
         }
+        while(System.currentTimeMillis()<startingTimeStamp)
+
         isRecording = true;
         System.out.println("Recording started!");
     }
     public void stopRecording(){
+        System.out.println(recordTime);
         isRecording = false;
-        recordTime = System.currentTimeMillis() - startingTimeStamp;
+        Long timeStamp = System.currentTimeMillis();
+        for(Notes note : noteToSequences.keySet()){
+            LinkedList list = noteToSequences.get(note);
+            Long newPause = timeStamp - timeStamps.get(note);
+            list.add(newPause);
+            System.out.println(list);
+        }
+
+
+        recordTime = (System.currentTimeMillis() - startingTimeStamp) +recordTime;
+
+
+
+        System.out.println(recordTime);
+
         System.out.println("Recording stopped!");
     }
     public void addNote(Notes note,boolean shouldActivate){
@@ -101,8 +123,10 @@ public class SequenceChannel {
     // Play sequence Part.
 
     public PlayLoop playSequence() throws InterruptedException {
-        stopRecording();
-        isPlaying = true;
+        if(isRecording){
+            System.out.println("Can't play sequence while recording!");
+            return null;
+        }
         PlayLoop playLoop = new PlayLoop();
         playLoop.start();
         System.out.println("Sequence started playing!");
@@ -119,16 +143,21 @@ public class SequenceChannel {
         public void run(){
             isRecording = false;
             isPlaying = true;
+            ExecutorService executorService = Executors.newCachedThreadPool();
+
             while(isPlaying) {
+                System.out.println("Record Time: " + recordTime);
+                Long startTimeStamp = System.currentTimeMillis();
                 for (Notes key : noteToSequences.keySet()) {
-                    PlayKeySequence play = new PlayKeySequence(key, notesToOctave.get(key), noteToSequences.get(key));
-                    play.start();
+                    executorService.execute(new PlayKeySequence(key, notesToOctave.get(key), noteToSequences.get(key)));
                 }
                 try {
-                    Thread.sleep(recordTime);
+                    executorService.awaitTermination(recordTime, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+
+
             }
         }
     }
@@ -147,6 +176,7 @@ public class SequenceChannel {
 
         @Override
         public void run(){
+            System.out.println(sequence);
             for(Long elem : sequence){
                 if(elem >= 0){
                     try {
