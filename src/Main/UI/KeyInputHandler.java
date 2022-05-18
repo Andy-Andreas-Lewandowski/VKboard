@@ -70,8 +70,8 @@ public class KeyInputHandler implements KeyListener {
         }
         //Num 6 - Play all Channels. TODO
         else if (e.getExtendedKeyCode() == 102) {
-            if(piano.areAllSeqPlaying) piano.stopAllSeq();
-            else piano.playAllSeq();
+            //if(piano.areAllSeqPlaying) piano.stopAllSeq();
+            //else piano.playAllSeq();
 
         }
         //Num 7 - Select Instrument.

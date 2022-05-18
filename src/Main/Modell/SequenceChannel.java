@@ -5,7 +5,7 @@ import Main.Modell.InstrumentPresets.InstrumentPreset;
 
 import Main.Modell.Piano.Octave;
 
-
+//TODO: Make step sequencer
 import javax.sound.midi.*;
 import java.util.ArrayList;
 import java.util.HashMap;

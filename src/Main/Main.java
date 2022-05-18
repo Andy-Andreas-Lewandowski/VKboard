@@ -46,7 +46,7 @@ public class Main {
 
         RootService rootService = new RootService();
         UI ui = new UI(rootService);
-        for(Instrument inst : MidiSystem.getSynthesizer().getDefaultSoundbank().getInstruments()) System.out.println(inst.toString());
+        //for(Instrument inst : MidiSystem.getSynthesizer().getDefaultSoundbank().getInstruments()) System.out.println(inst.toString());
 
     }
 
