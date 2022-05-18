@@ -2,6 +2,7 @@ package Main.UI;
 
 
 import Main.Modell.SequenceChannel;
+import Main.Modell.StepSequencer;
 import Main.Service.Piano;
 import Main.Service.RootService;
 
@@ -29,7 +30,7 @@ public class KeyInputHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         Piano piano = root.piano;
-        SequenceChannel seqChannel = piano.sequenceChannelSelected;
+        StepSequencer seqChannel = piano.sequenceChannelSelected;
 
         if (pressedKeys.contains(e.getKeyCode())) return;
         // Num 1 - Start recording on selected Channel.
@@ -58,20 +59,23 @@ public class KeyInputHandler implements KeyListener {
             seqChannel.clear();
         //Num 4 - Play selected Channel.
         } else if (e.getExtendedKeyCode() == 100) {
-            if(seqChannel.isPlaying()){
+            if(seqChannel.getIsPlaying()){
                 seqChannel.stopPlaying();
             }else{
-                try {
-                    seqChannel.playSequence();
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
+                seqChannel.startPlaying();
             }
         }
         //Num 6 - Play all Channels. TODO
         else if (e.getExtendedKeyCode() == 102) {
-            //if(piano.areAllSeqPlaying) piano.stopAllSeq();
-            //else piano.playAllSeq();
+            boolean isASeqPlaying = false;
+            for(StepSequencer seq : piano.sequencerChannels){
+                isASeqPlaying = seq.getIsPlaying() || isASeqPlaying;
+            }
+            if(isASeqPlaying){
+                piano.stopAllSequencer();
+            }else{
+                piano.playAllSequencer();
+            }
 
         }
         //Num 7 - Select Instrument.

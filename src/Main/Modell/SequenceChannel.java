@@ -28,9 +28,8 @@ public class SequenceChannel {
     InstrumentPreset instrument;
 
 
-    public boolean getIsRecording(){
-        return isRecording;
-    }
+    public boolean getIsRecording(){return isRecording;}
+
 
     public boolean isPlaying() {return isPlaying;}
 
@@ -146,7 +145,7 @@ public class SequenceChannel {
             ExecutorService executorService = Executors.newCachedThreadPool();
 
             while(isPlaying) {
-                System.out.println("Record Time: " + recordTime);
+                System.out.println("StepClockRecord Time: " + recordTime);
                 Long startTimeStamp = System.currentTimeMillis();
                 for (Notes key : noteToSequences.keySet()) {
                     executorService.execute(new PlayKeySequence(key, notesToOctave.get(key), noteToSequences.get(key)));
@@ -188,7 +187,7 @@ public class SequenceChannel {
                     octave.play(note);
                 }else if(elem == -2L){
                     try {octave.stop(note);}
-                    catch (InvalidMidiDataException e) {throw new RuntimeException(e);}
+                    catch (Exception e) {throw new RuntimeException(e);}
                 }
                 if(!isPlaying)return;
             }
