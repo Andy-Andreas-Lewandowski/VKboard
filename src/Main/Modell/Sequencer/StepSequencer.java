@@ -1,13 +1,12 @@
-package Main.Modell;
+package Main.Modell.Sequencer;
 
 import Main.Modell.Enums.Notes;
-import Main.Modell.InstrumentPresets.InstrumentPreset;
-import Main.Modell.Piano.Octave;
+import Main.Modell.Piano.InstrumentPresets.SynthesizerPreset;
+import Main.Modell.Piano.SynthesizerComponent;
 import Main.Service.Piano;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Sequence;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -21,13 +20,17 @@ public class StepSequencer {
     boolean isRecording = false;
     boolean isPlaying = false;
     HashMap<Notes, Byte[]> noteToSequences = new HashMap<Notes,Byte[]>();
-    HashMap<Notes, Octave> notesToOctave = new HashMap<Notes, Octave>();
+    HashMap<Notes, SynthesizerComponent> notesToOctave = new HashMap<Notes, SynthesizerComponent>();
 
 
-    ArrayList<Octave> octaves = new ArrayList<>();
+    ArrayList<SynthesizerComponent> synthesizerComponents = new ArrayList<>();
 
-    InstrumentPreset instrument;
+    SynthesizerPreset instrument;
+    public StepSequencer() throws MidiUnavailableException, InvalidMidiDataException {
+        synthesizerComponents.add(new SynthesizerComponent());
+        synthesizerComponents.add(new SynthesizerComponent());
 
+    }
     // ###################
     // # Getter & Setter #
     // ###################
@@ -64,13 +67,9 @@ public class StepSequencer {
         noteToSequences.clear();
         System.out.println("Sequence Channel is cleared!");
     }
-    public StepSequencer(Piano piano) throws MidiUnavailableException, InvalidMidiDataException {
-        octaves.add(new Octave());
-        octaves.add(new Octave());
-        this.piano = piano;
-    }
 
-    public void loadInstrument(InstrumentPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
+
+    public void loadInstrument(SynthesizerPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
         clear();
         this.instrument = instrument;
         notesToOctave.clear();
@@ -79,15 +78,15 @@ public class StepSequencer {
             Byte[] hits = new Byte[piano.stepsPerBeat * piano.maxBeats];
             Arrays.fill(hits,(byte)0);
             noteToSequences.put(note,hits);
-            notesToOctave.put(note,octaves.get(0));
-            octaves.get(0).loadInstrument(instrument,instrument.lowerOctave.values());
+            notesToOctave.put(note, synthesizerComponents.get(0));
+            synthesizerComponents.get(0).loadInstrument(instrument,instrument.lowerOctave.values());
         }
         for(Notes note : instrument.upperOctave.values()){
             Byte[] hits = new Byte[piano.stepsPerBeat*piano.maxBeats];
             Arrays.fill(hits,(byte)0);
             noteToSequences.put(note,hits);
-            notesToOctave.put(note,octaves.get(1));
-            octaves.get(1).loadInstrument(instrument,instrument.upperOctave.values());
+            notesToOctave.put(note, synthesizerComponents.get(1));
+            synthesizerComponents.get(1).loadInstrument(instrument,instrument.upperOctave.values());
         }
         System.out.println("Instrument " + instrument.toString() + " is connected to Sequence!");
     }
@@ -165,9 +164,9 @@ public class StepSequencer {
     public ArrayList<PlayNote> getPlayNoteList(){
         ArrayList<PlayNote> noteList = new ArrayList<>();
         for(Notes note : noteToSequences.keySet()){
-            Octave octave = notesToOctave.get(note);
+            SynthesizerComponent synthesizerComponent = notesToOctave.get(note);
             Byte[] sequence = noteToSequences.get(note);
-            noteList.add(new PlayNote(note,octave,sequence));
+            noteList.add(new PlayNote(note, synthesizerComponent,sequence));
         }
 
         return noteList;
@@ -249,23 +248,23 @@ public class StepSequencer {
 
     public class PlayNote extends Thread {
         Notes note;
-        Octave octave;
+        SynthesizerComponent synthesizerComponent;
         Byte[] sequence;
         int step = currentStep;
 
         // Initialize NotePlayer
-        public PlayNote(Notes note, Octave octave, Byte[] sequence) {
+        public PlayNote(Notes note, SynthesizerComponent synthesizerComponent, Byte[] sequence) {
             this.note = note;
-            this.octave = octave;
+            this.synthesizerComponent = synthesizerComponent;
             this.sequence = sequence;
         }
 
         @Override
         public void run() {
             if (sequence[currentStep] == -1) {
-                octave.play(note);
+                synthesizerComponent.play(note);
             }else if(sequence[currentStep] == -2){
-                octave.stop(note);
+                synthesizerComponent.stop(note);
             }
         }
     }

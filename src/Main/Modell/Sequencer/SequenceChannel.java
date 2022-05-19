@@ -1,9 +1,9 @@
-package Main.Modell;
+package Main.Modell.Sequencer;
 
 import Main.Modell.Enums.Notes;
-import Main.Modell.InstrumentPresets.InstrumentPreset;
+import Main.Modell.Piano.InstrumentPresets.SynthesizerPreset;
 
-import Main.Modell.Piano.Octave;
+import Main.Modell.Piano.SynthesizerComponent;
 
 //TODO: Make step sequencer
 import javax.sound.midi.*;
@@ -19,13 +19,13 @@ public class SequenceChannel {
     boolean isPlaying = false;
     HashMap<Notes,LinkedList<Long>> noteToSequences = new HashMap<Notes,LinkedList<Long>>();
     HashMap<Notes, Long> timeStamps = new HashMap<Notes, Long>();
-    HashMap<Notes, Octave> notesToOctave = new HashMap<Notes, Octave>();
+    HashMap<Notes, SynthesizerComponent> notesToOctave = new HashMap<Notes, SynthesizerComponent>();
 
-    ArrayList<Octave> octaves = new ArrayList<>();
+    ArrayList<SynthesizerComponent> synthesizerComponents = new ArrayList<>();
 
     Long recordTime = 0L;
     Long startingTimeStamp = 0L;
-    InstrumentPreset instrument;
+    SynthesizerPreset instrument;
 
 
     public boolean getIsRecording(){return isRecording;}
@@ -44,26 +44,26 @@ public class SequenceChannel {
         System.out.println("Sequence Channel is cleared!");
     }
     public SequenceChannel() throws MidiUnavailableException, InvalidMidiDataException {
-        octaves.add(new Octave());
-        octaves.add(new Octave());
+        synthesizerComponents.add(new SynthesizerComponent());
+        synthesizerComponents.add(new SynthesizerComponent());
     }
 
-    public void loadInstrument(InstrumentPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
+    public void loadInstrument(SynthesizerPreset instrument) throws MidiUnavailableException, InvalidMidiDataException {
         clear();
         this.instrument = instrument;
         notesToOctave.clear();
 
         for(Notes note : instrument.lowerOctave.values()){
             noteToSequences.put(note,new LinkedList());
-            notesToOctave.put(note,octaves.get(0));
+            notesToOctave.put(note, synthesizerComponents.get(0));
             timeStamps.put(note,0L);
-            octaves.get(0).loadInstrument(instrument,instrument.lowerOctave.values());
+            synthesizerComponents.get(0).loadInstrument(instrument,instrument.lowerOctave.values());
         }
         for(Notes note : instrument.upperOctave.values()){
             noteToSequences.put(note,new LinkedList());
-            notesToOctave.put(note,octaves.get(1));
+            notesToOctave.put(note, synthesizerComponents.get(1));
             timeStamps.put(note,0L);
-            octaves.get(1).loadInstrument(instrument,instrument.upperOctave.values());
+            synthesizerComponents.get(1).loadInstrument(instrument,instrument.upperOctave.values());
         }
         System.out.println("Instrument " + instrument.toString() + " is connected to Sequence!");
     }
@@ -163,13 +163,13 @@ public class SequenceChannel {
 
 
     public class PlayKeySequence extends Thread{
-        Octave octave;
+        SynthesizerComponent synthesizerComponent;
         Notes note;
         LinkedList<Long> sequence;
 
-        public PlayKeySequence(Notes note, Octave octave,LinkedList<Long> sequence){
+        public PlayKeySequence(Notes note, SynthesizerComponent synthesizerComponent, LinkedList<Long> sequence){
             this.sequence = sequence;
-            this.octave = octave;
+            this.synthesizerComponent = synthesizerComponent;
             this.note = note;
         }
 
@@ -184,9 +184,10 @@ public class SequenceChannel {
                         throw new RuntimeException(e);
                     }
                 }else if(elem == -1L){
-                    octave.play(note);
+                    synthesizerComponent.play(note);
                 }else if(elem == -2L){
-                    try {octave.stop(note);}
+                    try {
+                        synthesizerComponent.stop(note);}
                     catch (Exception e) {throw new RuntimeException(e);}
                 }
                 if(!isPlaying)return;

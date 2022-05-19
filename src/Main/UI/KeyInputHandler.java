@@ -1,8 +1,7 @@
 package Main.UI;
 
 
-import Main.Modell.SequenceChannel;
-import Main.Modell.StepSequencer;
+import Main.Modell.Sequencer.StepSequencer;
 import Main.Service.Piano;
 import Main.Service.RootService;
 

@@ -1,4 +1,4 @@
-package Main.Modell.InstrumentPresets;
+package Main.Modell.Piano.InstrumentPresets;
 
 import Main.Modell.Enums.KeyboardCodes;
 import Main.Modell.Enums.Notes;

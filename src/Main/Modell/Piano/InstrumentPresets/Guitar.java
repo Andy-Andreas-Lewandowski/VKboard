@@ -1,6 +1,6 @@
-package Main.Modell.InstrumentPresets;
+package Main.Modell.Piano.InstrumentPresets;
 
-public class Guitar extends InstrumentPreset {
+public class Guitar extends SynthesizerPreset {
 
     public Guitar(){
         velocity = 70;

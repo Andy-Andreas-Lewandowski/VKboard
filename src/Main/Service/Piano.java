@@ -1,9 +1,9 @@
 package Main.Service;
 
 import Main.Modell.Enums.Notes;
-import Main.Modell.InstrumentPresets.InstrumentPreset;
-import Main.Modell.Piano.Octave;
-import Main.Modell.StepSequencer;
+import Main.Modell.Piano.InstrumentPresets.SynthesizerPreset;
+import Main.Modell.Piano.SynthesizerComponent;
+import Main.Modell.Sequencer.StepSequencer;
 
 import javax.sound.midi.*;
 import java.util.ArrayList;
@@ -15,14 +15,14 @@ import java.util.concurrent.TimeUnit;
 
 public class Piano {
     // Synthesizers
-    HashMap<Integer, Octave> keyboardCodeToOctave = new HashMap<>(); // Quick access to Synth per playable octave
+    HashMap<Integer, SynthesizerComponent> keyboardCodeToOctave = new HashMap<>(); // Quick access to Synth per playable octave
     HashMap<Integer, Notes>  keyboardCodeToNote   = new HashMap<>(); // Quick access to Keyboard and Notes binding
-    ArrayList<Octave> octaves = new ArrayList<>(); // Saving the refrence to Octave Synthesizer when reinitializing them
-    ArrayList<InstrumentPreset> instrumentList = new ArrayList<>(); // List of instrument presets to change octaves behavior
+    ArrayList<SynthesizerComponent> synthesizerComponents = new ArrayList<>(); // Saving the refrence to SynthesizerComponent Synthesizer when reinitializing them
+    ArrayList<SynthesizerPreset> instrumentList = new ArrayList<>(); // List of instrument presets to change synthesizerComponents behavior
     int nxtInstrumentIndex = 0; // Index to select next instrument preset
-    InstrumentPreset instrumentSelected; // Current instrument preset
+    SynthesizerPreset instrumentSelected; // Current instrument preset
 
-    // Sequencer
+    // Main.Modell.Sequencer
     public ArrayList<StepSequencer> sequencerChannels = new ArrayList<>(); // Refs to available sequencerChannels
     public int nxtSequenceChannelIndex = 0;
     public StepSequencer sequenceChannelSelected = new StepSequencer(this);
@@ -32,21 +32,20 @@ public class Piano {
 
 
     public final int stepsPerBeat = 32;
-    public final int maxSteps = maxBeats * stepsPerBeat;
 
     public int bpm = 60;
 
 
     // Metronome
-    public Metronome metronome = new Metronome();
+    //public Metronome metronome = new Metronome(this);
 
     // General Data
 
 
 
     public Piano() throws MidiUnavailableException, InvalidMidiDataException {
-        octaves.add(new Octave());
-        octaves.add(new Octave());
+        synthesizerComponents.add(new SynthesizerComponent());
+        synthesizerComponents.add(new SynthesizerComponent());
     }
 
     // #####################
@@ -55,7 +54,7 @@ public class Piano {
 
     /**
      * Loads the next instrument preset to the current preset. Calls the loadInstrument() Method to initialize the
-     * Octave Synthesizer.
+     * SynthesizerComponent Synthesizer.
      *
      * @throws MidiUnavailableException
      * @throws InvalidMidiDataException
@@ -68,30 +67,30 @@ public class Piano {
 
     /**
      * Clears the keybaordcode access Maps. Initializes the octave synthesizers with the data of
-     * the given InstrumentPreset. Then updates the keyboardcode access maps with the InstrumentPreset data.
+     * the given SynthesizerPreset. Then updates the keyboardcode access maps with the SynthesizerPreset data.
      *
      * @param preset
      * @throws MidiUnavailableException
      * @throws InvalidMidiDataException
      */
-    public void loadInstrument(InstrumentPreset preset) throws MidiUnavailableException, InvalidMidiDataException {
-        // Clear the access Maps and updates the InstrumentPreset.
+    public void loadInstrument(SynthesizerPreset preset) throws MidiUnavailableException, InvalidMidiDataException {
+        // Clear the access Maps and updates the SynthesizerPreset.
         keyboardCodeToOctave.clear();
         keyboardCodeToNote.clear();
         this.instrumentSelected = preset;
 
         // Loads instruments to octave synthesizers
-        octaves.get(0).loadInstrument(preset,preset.lowerOctave.values());
-        octaves.get(1).loadInstrument(preset,preset.upperOctave.values());
+        synthesizerComponents.get(0).loadInstrument(preset,preset.lowerOctave.values());
+        synthesizerComponents.get(1).loadInstrument(preset,preset.upperOctave.values());
 
         // Transfers lower octave keyboard bindings from preset to access maps
         for(Integer keyboardCode : preset.lowerOctave.keySet()){
-            keyboardCodeToOctave.put(keyboardCode,octaves.get(0));
+            keyboardCodeToOctave.put(keyboardCode, synthesizerComponents.get(0));
             keyboardCodeToNote.put(keyboardCode,preset.lowerOctave.get(keyboardCode));
         }
         // Transfers higher octave keyboard bindings from preset to access maps
         for(Integer keyboardCode : preset.upperOctave.keySet()){
-            keyboardCodeToOctave.put(keyboardCode,octaves.get(1));
+            keyboardCodeToOctave.put(keyboardCode, synthesizerComponents.get(1));
             keyboardCodeToNote.put(keyboardCode,preset.upperOctave.get(keyboardCode));
         }
 
@@ -100,7 +99,7 @@ public class Piano {
 
     /**
      * Calls the loadInstrument() method of the selected SequenceChannel. Enables recording of sequences.
-     * Necessary so a change of InstrumentPreset is not overwritting a recorded sequence.
+     * Necessary so a change of SynthesizerPreset is not overwritting a recorded sequence.
      *
      * @throws MidiUnavailableException
      * @throws InvalidMidiDataException
@@ -144,7 +143,7 @@ public class Piano {
 
 
     // ####################
-    // # Manage Sequencer #
+    // # Manage Main.Modell.Sequencer #
     // ####################
 
     /**

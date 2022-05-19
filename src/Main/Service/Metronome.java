@@ -1,8 +1,10 @@
 package Main.Service;
 
+import Main.Modell.Settings;
+
 import javax.sound.midi.*;
 
-public class Metronome {
+public class Metronome implements Settings.SettingsObserver {
     int bpm = 80;
     boolean isPlaying = false;
     Synthesizer metronome;
@@ -11,7 +13,7 @@ public class Metronome {
     ShortMessage tickOff;
 
 
-    public Metronome() throws MidiUnavailableException, InvalidMidiDataException {
+    public Metronome(RootService root) throws MidiUnavailableException, InvalidMidiDataException {
         metronome = MidiSystem.getSynthesizer();
         metronome.open();
         MidiChannel[] channels = metronome.getChannels();
@@ -47,6 +49,11 @@ public class Metronome {
 
     public boolean getIsPlaying(){
         return isPlaying;
+    }
+
+    @Override
+    public void update() {
+
     }
 
 
