@@ -1,40 +1,43 @@
 package Main.Service;
 
 
-import Main.Modell.Settings;
+import Main.Components.EnumsAndMaps.Notes;
+import Main.Components.Instrument.Pianoroll;
+import Main.Components.Sequencer.Sequencer;
 import Main.UI.UI;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 
 public class RootService {
-    public Piano piano;
-    public SynthController synthController;
-    public SequencerController sequencerController;
+    public Pianoroll pianoroll;
+    public Sequencer sequencer;
     public Metronome metronome;
-    public Settings settings;
 
     UI ui;
 
     public RootService() throws MidiUnavailableException, InvalidMidiDataException {
+        //System.out.println(Notes.getOctave(1));
         // Get instances
-        settings = Settings.getInstance();
-        synthController = new SynthController(this);
-        sequencerController = new SequencerController(this);
-        metronome = new Metronome(this);
+        pianoroll = Pianoroll.getInstance();
+        pianoroll.init();
+
+
+        sequencer = Sequencer.getInstance();
+        sequencer.init();
+        pianoroll.subscribe(sequencer);
+        UI ui = new UI(this);
+
+
+        //metronome = new Metronome(this);
 
         // Connect Instances
-        settings.subscribeToSynthesizer(synthController);
-        settings.subscribeToSequencer(sequencerController);
-        settings.subscribeToBeat(metronome);
 
-
-
-        synthController.subscribeToSynthesizerInput(sequencerController);
 
 
 
         //ui = new UI(this);
+
 
 
 

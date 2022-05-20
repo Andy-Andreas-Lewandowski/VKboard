@@ -1,11 +1,12 @@
 package Main.Service;
 
-import Main.Modell.Settings;
+
+
 
 import javax.sound.midi.*;
 
-public class Metronome implements Settings.SettingsObserver {
-    int bpm = 80;
+public class Metronome{
+   /* int bpm = 80;
     boolean isPlaying = false;
     Synthesizer metronome;
     Receiver receiver;
@@ -73,5 +74,6 @@ public class Metronome implements Settings.SettingsObserver {
         }
 
     }
-
+*/
 }
+

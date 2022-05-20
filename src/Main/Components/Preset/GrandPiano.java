@@ -1,5 +1,5 @@
-package Main.Modell.Piano.InstrumentPresets;
-import Main.Modell.Enums.Notes;
+package Main.Components.Preset;
+import Main.Components.EnumsAndMaps.Notes;
 import java.util.List;
 
 public class GrandPiano extends SynthesizerPreset {
@@ -9,7 +9,9 @@ public class GrandPiano extends SynthesizerPreset {
         bank = 1024;
         instrument = 0;
         name = "Grand Piano";
-        octavesList = List.of(Notes.getOctave(3),Notes.getOctave(4));
+
+        notes.addAll(Notes.getOctave(3));
+        notes.addAll(Notes.getOctave(4));
 
     }
 }

@@ -1,12 +1,11 @@
 package Main.UI;
 
-import Main.Modell.Enums.KeyboardCodes;
+import Main.Components.EnumsAndMaps.KeyToInputCode;
 import Main.Service.RootService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyListener;
-import java.sql.Array;
 
 
 public class UI {
@@ -115,7 +114,7 @@ public class UI {
     }
 
     class WhiteKey extends Key{
-        KeyboardCodes key;
+        KeyToInputCode key;
         public WhiteKey(int keyNumber){
             setBackground(Color.WHITE);
 
@@ -134,7 +133,7 @@ public class UI {
 
     class BlackKey extends Key{
 
-        KeyboardCodes key;
+        KeyToInputCode key;
 
         public BlackKey(int number){
             setBackground(Color.BLACK);

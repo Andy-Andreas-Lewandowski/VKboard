@@ -1,7 +1,8 @@
-package Main.Modell.Piano.InstrumentPresets;
+package Main.Components.Preset;
 
-import Main.Modell.Enums.Notes;
+import Main.Components.EnumsAndMaps.Notes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SynthesizerPreset {
@@ -12,9 +13,9 @@ public abstract class SynthesizerPreset {
 
     String name;
 
-    List<List<Notes>> octavesList;
+    List<Notes> notes = new ArrayList<>();
 
-    public List<List<Notes>> getOctavesList() {return octavesList;}
+    public List<Notes> getNotes() {return notes;}
 
     public int getVelocity(){return velocity;}
     public int getBank(){return bank;}

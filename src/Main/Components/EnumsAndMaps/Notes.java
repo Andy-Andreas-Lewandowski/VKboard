@@ -1,10 +1,10 @@
-package Main.Modell.Enums;
+package Main.Components.EnumsAndMaps;
 
 import java.util.ArrayList;
 
 public enum Notes {
 
-    // 3rd SynthesizerComponent
+    // 3rd SoundPlayer
     NONE(0),
     C1(36),CS1(37),D1(38),DS1(39),E1(40),F1(41),FS1(42),G1(43),
     GS1(44),A1(45),AS1(46),B1(47),
@@ -13,7 +13,7 @@ public enum Notes {
 
     C3(60),CS3(61),D3(62),DS3(63),E3(64),F3(65),FS3(66),G3(67),
     GS3(68),A3(69),AS3(70),B3(71),
-    // 4th SynthesizerComponent
+    // 4th SoundPlayer
     C4(72),CS4(73),D4(74),DS4(75),E4(76),F4(77),FS4(78),G4(79),
     GS4(80),A4(81),AS4(82),B4(83),
     C5(84),CS5(85),D5(86),DS5(87),E5(89),F5(90),FS5(91),G5(92),
