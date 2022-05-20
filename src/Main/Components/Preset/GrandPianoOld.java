@@ -1,10 +1,9 @@
 package Main.Components.Preset;
 import Main.Components.EnumsAndMaps.Notes;
-import java.util.List;
 
-public class GrandPiano extends SynthesizerPreset {
+public class GrandPianoOld extends SynthesizerPreset {
 
-    public GrandPiano(){
+    public GrandPianoOld(){
         velocity = 20;
         bank = 1024;
         instrument = 0;

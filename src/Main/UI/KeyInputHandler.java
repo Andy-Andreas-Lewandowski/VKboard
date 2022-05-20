@@ -80,6 +80,11 @@ public class KeyInputHandler implements KeyListener {
 *//*            piano.nextSequenceChannel();
         ;*/
         //Num . - Start/Stop Metronome*//*
+        }
+        //Num 7 - Select Instrument.
+        else if (e.getExtendedKeyCode() == 103) {
+            Pianoroll.loadNextPreset();
+            System.out.println("Hey");
         }else if (e.getExtendedKeyCode() == 110) {
             if (!Metronome.getIsPlaying()){
                 System.out.println("Metronome started!");

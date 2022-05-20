@@ -1,6 +1,8 @@
 package Main.UI;
 
 import Main.Components.EnumsAndMaps.KeyToInputCode;
+import Main.Components.EnumsAndMaps.Notes;
+import Main.Components.Instrument.Pianoroll.PianorollObserver;
 import Main.Service.RootService;
 
 import javax.swing.*;
@@ -9,13 +11,14 @@ import java.awt.event.KeyListener;
 
 
 public class UI {
-    final static int WIDTH = 812;
-    final static int HEIGHT = 500;
-
-    final static int DIVIDER = Key.WHITE_KEY_HEIGHT+2;
+    final static int APPROX_WIDTH = 980;
+    final static int APPROX_HEIGHT = 500;
+    // magic number 38 and i do not know why it works
+    static int divider = APPROX_HEIGHT - (Key.WHITE_KEY_HEIGHT + 0);
+    //final static int DIVIDER = (HEIGHT - Key.WHITE_KEY_HEIGHT)-2;
 
     RootService rootService;
-    KeyboardFrame frame;
+    MainFrame frame;
     Keyboardroll keyboardroll;
     KeyboardrollSettingPane splitPane;
 
@@ -25,20 +28,15 @@ public class UI {
     }
 
     public JFrame buildUI(){
-        frame = new KeyboardFrame(new KeyInputHandler(rootService));
-        splitPane = new KeyboardrollSettingPane();
-        frame.add(splitPane);
+        frame = new MainFrame(new KeyInputHandler(rootService));
+        frame.repaint();
+
         keyboardroll = new Keyboardroll();
 
         // Add for layout works
-        JPanel one = new JPanel();
-        JPanel two = new JPanel();
-        one.setBackground(Color.CYAN);
-        two.setBackground(Color.GREEN);
-        one.setOpaque(true);
+        SettingPanel settingPanel = new SettingPanel();
 
-        splitPane.add(two);
-        splitPane.add(keyboardroll);
+
 
         return frame;
     }
@@ -47,84 +45,139 @@ public class UI {
 
 
 
-    class KeyboardFrame extends JFrame{
+    class MainFrame extends JFrame{
         Dimension dimension;
-        public KeyboardFrame(KeyListener keyListener){
-
-
+        public MainFrame(KeyListener keyListener){
+            UI.divider -= getInsets().bottom;
             addKeyListener(keyListener);
             setVisible(true);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setBackground(Color.GRAY);
 
-            // Size
-            dimension = new Dimension(UI.WIDTH,UI.HEIGHT);
-            setSize(dimension);
-            setMaximumSize(dimension);
-            setMaximumSize(dimension);
-            setResizable(false);
+            setSize(UI.APPROX_WIDTH,UI.APPROX_HEIGHT);
 
+            //setResizable(false);
+
+
+
+            // Layout
+            setLayout(new BorderLayout());
+
+            // Build as Tree
+            add(new KeyboardrollSettingPane());
         }
     }
 
     class KeyboardrollSettingPane extends JSplitPane{
         Rectangle size;
-        final int splitPosition = 239;
+        Dimension sizeDim;
         public KeyboardrollSettingPane(){
             // Initialize JSplitPane
             setOrientation(JSplitPane.VERTICAL_SPLIT);
-            setLeftComponent(null);
-            setRightComponent(null);
 
-            // Set Sizes
-            size = new Rectangle(0,0,UI.WIDTH,UI.HEIGHT);
-            setBounds(size);
 
-            setDividerLocation(splitPosition);
+
+            //setD
+
+            //build as tree
+            setTopComponent(new SettingPanel());
+            setBottomComponent(new Keyboardroll());
+            this.setAlignmentY(0);
+            // Set Divider
+            //setDividerLocation(getTopComponent().getHeight());
             setDividerSize(0);
+
+/*            int width = Math.max(getTopComponent().getWidth(),getBottomComponent().getWidth());
+            int height = getTopComponent().getHeight() + getBottomComponent().getHeight();
+            setSize(width,height);*/
+
         }
 
-        @Override
+/*        @Override
         public int getDividerLocation(){
-            return  splitPosition;
+            return  UI.divider;
         }
         @Override
         public int getLastDividerLocation(){
-            return splitPosition;
-        }
-
+            return UI.divider;
+        }*/
 
     }
+
+    // ############
+    // # Settings #
+    // ############
+    class SettingPanel extends JPanel{
+        Rectangle size;
+        Dimension sizeDim;
+        public SettingPanel(){
+
+            setLayout(new FlowLayout());
+            setBackground(new Color(20,20,20));
+        }
+
+    }
+
+    // ################
+    // # Keyboardroll #
+    // ################
     class Keyboardroll extends JLayeredPane{
+
+
         public Keyboardroll(){
+
+
+            // Layout
+
+            //System.out.println(this.getAlignmentY());
+
             setBackground(Color.GRAY);
             for(int i = 0 ; i < 14 ; i++)add(new WhiteKey(i),JLayeredPane.DEFAULT_LAYER);
             for(int i = 0 ; i < 10; i++)add(new BlackKey(i),JLayeredPane.PALETTE_LAYER);
+
+
+            // Size
+            int height = Key.WHITE_KEY_HEIGHT;
+            int width = Key.WHITE_KEY_WIDTH*14;
+            setSize(width,height);
         }
 
     }
-    abstract class Key extends JButton{
-        static final int WHITE_KEY_WIDTH = (UI.WIDTH-14) / 14;
-        static final int WHITE_KEY_HEIGHT = (int) (WHITE_KEY_WIDTH * 4.5);
-        static final int BLACK_KEY_WIDTH = WHITE_KEY_WIDTH/3*2;
+    abstract class Key extends JButton implements PianorollObserver {
+        Notes note = Notes.CS1;
+        static final int WHITE_KEY_WIDTH = (UI.APPROX_WIDTH -14) / 14;
+        static final int WHITE_KEY_HEIGHT = (int) (WHITE_KEY_WIDTH * 4.0);
+        final Dimension WHITE_KEY_DIM = new Dimension(WHITE_KEY_WIDTH,WHITE_KEY_HEIGHT);
+
+        static final int BLACK_KEY_WIDTH = (int)(WHITE_KEY_WIDTH/2.5) * 2;
         static final int BLACK_KEY_HEIGHT = (int) (BLACK_KEY_WIDTH * 3.0);
+        final Dimension BLACK_KEY_DIM = new Dimension(BLACK_KEY_WIDTH,BLACK_KEY_HEIGHT);
 
+        @Override
+        public void onPlay(Notes note) {
 
+        }
+        @Override
+        public void onStop(Notes note){
 
+        }
     }
 
     class WhiteKey extends Key{
         KeyToInputCode key;
         public WhiteKey(int keyNumber){
+            // Color
             setBackground(Color.WHITE);
 
-            Dimension dimension = new Dimension(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT);
-            setMaximumSize(dimension);
-            setMinimumSize(dimension);
-
+            // Frame Allignment and Dimensions
+            setMaximumSize(WHITE_KEY_DIM);
+            setMinimumSize(WHITE_KEY_DIM);
             setBounds(keyNumber* WHITE_KEY_WIDTH,0, WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT);
+            setPreferredSize(WHITE_KEY_DIM);
 
-
+            // Text
+            this.setText(note.toString());
+            this.setVerticalAlignment(SwingConstants.BOTTOM);
+            this.setFont(new Font("Consolas",Font.PLAIN,11));
         }
         //@Override
         //public Dimension get
@@ -135,13 +188,20 @@ public class UI {
 
         KeyToInputCode key;
 
-        public BlackKey(int number){
+        public BlackKey(int keyNumber){
+            // Color
             setBackground(Color.BLACK);
-            Dimension dimension = new Dimension(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT);
-            setMaximumSize(dimension);
-            setMinimumSize(dimension);
-            setBounds(getKeyPosition(number),0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT);
+            this.setForeground(Color.WHITE);
 
+            setMaximumSize(BLACK_KEY_DIM);
+            setMinimumSize(BLACK_KEY_DIM);
+            setBounds(getKeyPosition(keyNumber),0, BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT);
+            setPreferredSize(BLACK_KEY_DIM);
+
+            // Text
+            this.setText(note.toString());
+            this.setVerticalAlignment(SwingConstants.BOTTOM);
+            this.setFont(new Font("Consolas",Font.PLAIN,8));
 
         }
 

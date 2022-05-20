@@ -2,7 +2,6 @@ package Main.Components.Instrument;
 
 import Main.Components.EnumsAndMaps.KeyboardMapping;
 import Main.Components.EnumsAndMaps.Notes;
-import Main.Components.Preset.GrandPiano;
 import Main.Components.Preset.SynthesizerPreset;
 
 import java.util.ArrayList;
@@ -17,9 +16,7 @@ public class Pianoroll {
     public static Pianoroll getInstance(){
         return synthSetting;
     }
-    public static void buildPresets(){
 
-    }
 
     // Presets
     static int presetId = 0;
@@ -47,7 +44,9 @@ public class Pianoroll {
 
         synthesizer.loadPreset(preset);
         presetId = id;
+        System.out.println(preset.toString() + " is loaded!");
     }
+    public static void loadNextPreset(){loadPreset((presetId+1)%presets.size());}
 
     public static Synthesizer cloneSynthesizer(){return (Synthesizer) synthesizer.clone();}
 
@@ -84,7 +83,8 @@ public class Pianoroll {
 
     public static void init(){
         presets.clear();
-        presets.add(new GrandPiano());
+
+        presets = SynthesizerPreset.getPresets();
 
         loadPreset(0);
 

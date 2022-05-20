@@ -13,6 +13,7 @@ public class Synthesizer implements Cloneable{
     // Loaded Synth preset
     SynthesizerPreset preset;
     // Maps for quick access
+    boolean isLowerOctave = true;
     HashMap<Notes,Receiver>                      noteToReceiver         = new HashMap<>();
     HashMap<Notes,ShortMessage>                  noteToPlayMessage      = new HashMap<>();
     HashMap<Notes,ShortMessage>                  noteToStopMessage      = new HashMap<>();
