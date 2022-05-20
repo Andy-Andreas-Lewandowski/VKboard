@@ -26,4 +26,30 @@ public abstract class SynthesizerPreset {
         return name;
     }
 
+    public class GrandPiano extends SynthesizerPreset {
+        public GrandPiano(){
+            velocity = 20;
+            bank = 1024;
+            instrument = 0;
+            name = "Grand Piano";
+
+            notes.addAll(Notes.getOctave(3));
+            notes.addAll(Notes.getOctave(4));
+
+        }
+    }
+    public class s extends SynthesizerPreset {
+
+        public s(){
+            velocity = 20;
+            bank = 1024;
+            instrument = 0;
+            name = "Grand Piano";
+
+            notes.addAll(Notes.getOctave(3));
+            notes.addAll(Notes.getOctave(4));
+
+        }
+    }
+
 }

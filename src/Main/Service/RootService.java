@@ -1,8 +1,8 @@
 package Main.Service;
 
 
-import Main.Components.EnumsAndMaps.Notes;
 import Main.Components.Instrument.Pianoroll;
+import Main.Components.Sequencer.Metronome;
 import Main.Components.Sequencer.Sequencer;
 import Main.UI.UI;
 
@@ -26,6 +26,10 @@ public class RootService {
         sequencer = Sequencer.getInstance();
         sequencer.init();
         pianoroll.subscribe(sequencer);
+
+        metronome = Metronome.getInstance();
+        metronome.init();
+
         UI ui = new UI(this);
 
 

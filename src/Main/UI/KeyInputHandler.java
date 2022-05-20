@@ -2,12 +2,9 @@ package Main.UI;
 
 
 import Main.Components.Instrument.Pianoroll;
+import Main.Components.Sequencer.Metronome;
 import Main.Components.Sequencer.Sequencer;
-import Main.Components.Sequencer.SequencerChannel;
 import Main.Service.RootService;
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Set;
@@ -16,10 +13,14 @@ import java.util.TreeSet;
 public class KeyInputHandler implements KeyListener {
     RootService root;
     Set<Integer> pressedKeys = new TreeSet<Integer>();
+
+    Pianoroll pianoroll = Pianoroll.getInstance();
+    Sequencer sequencer = Sequencer.getInstance();
+    Metronome metronome = Metronome.getInstance();
+
     public KeyInputHandler(RootService root){
         this.root = root;
 
-        System.out.println("I was here");
     }
 
     @Override
@@ -29,9 +30,6 @@ public class KeyInputHandler implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Pianoroll pianoroll = root.pianoroll;
-        Sequencer sequencer = Sequencer.getInstance();
-
         if (pressedKeys.contains(e.getKeyCode())) return;
         // Num 1 - Start recording on selected Channel.
         if (e.getExtendedKeyCode() == 97) {
@@ -54,7 +52,7 @@ public class KeyInputHandler implements KeyListener {
             }else{
                 sequencer.stopThisSequence();
             }
-        }
+
 /*        //Num 6 - Play all Channels. TODO
         else if (e.getExtendedKeyCode() == 102) {
            *//* boolean isASeqPlaying = false;
@@ -80,11 +78,18 @@ public class KeyInputHandler implements KeyListener {
         // Num 9 - Change Sequence*//*
         }else if(e.getExtendedKeyCode() == 105) {
 *//*            piano.nextSequenceChannel();
-            //Num . - Start/Stop Metronome*//*
-        } else if (e.getExtendedKeyCode() == 110) {
-            //if(piano.metronome.getIsPlaying())piano.metronome.stop();
-            //else piano.metronome.start();*/
-        else{
+        ;*/
+        //Num . - Start/Stop Metronome*//*
+        }else if (e.getExtendedKeyCode() == 110) {
+            if (!Metronome.getIsPlaying()){
+                System.out.println("Metronome started!");
+                metronome.startMetronome();
+            }
+            else{
+                metronome.stopMetronome();
+                System.out.println("Metronome stopped!");
+            }
+        }else{
             root.pianoroll.playNote(e.getKeyCode());
         }
         pressedKeys.add(e.getKeyCode());
@@ -93,6 +98,6 @@ public class KeyInputHandler implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         pressedKeys.remove(e.getKeyCode());
-            root.pianoroll.stopNote(e.getKeyCode());
+            pianoroll.stopNote(e.getKeyCode());
     }
 }

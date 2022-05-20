@@ -12,7 +12,7 @@ public class UI {
     final static int WIDTH = 812;
     final static int HEIGHT = 500;
 
-    final static int DIVIDER = Key.WHITE_KEY_HEIGHT;
+    final static int DIVIDER = Key.WHITE_KEY_HEIGHT+2;
 
     RootService rootService;
     KeyboardFrame frame;

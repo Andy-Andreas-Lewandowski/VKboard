@@ -5,7 +5,6 @@ import Main.Components.Instrument.Pianoroll;
 import Main.Components.Instrument.Synthesizer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,7 +79,10 @@ public class Sequencer implements Pianoroll.PianorollObserver {
         }
     }
     public void stopAllSequencer(){
-
+        allPlaying = false;
+        for(SequencerChannel channel : channels){
+            channel.isPlaying = false;
+        }
     }
 
 
@@ -117,7 +119,7 @@ public class Sequencer implements Pianoroll.PianorollObserver {
                 long startTime = System.currentTimeMillis();
                 try {
                     threads.forEach(thread -> threadExecutor.execute(thread));
-                    threadExecutor.awaitTermination(stepTime, TimeUnit.MILLISECONDS);
+                    threadExecutor.awaitTermination(stepTime-2, TimeUnit.MILLISECONDS);
                     long timeLeft = ((startTime + stepTime) - 2L ) - System.currentTimeMillis();
                     if(timeLeft>0) Thread.sleep(timeLeft);
                 }
