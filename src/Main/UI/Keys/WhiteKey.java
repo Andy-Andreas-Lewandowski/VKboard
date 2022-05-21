@@ -53,6 +53,7 @@ public class WhiteKey extends JButton implements Pianoroll.PlayObserver {
         Dimension size = new Dimension((wkWidth),(wkHeight));
         setSize(size);
         setMinimumSize(size);
+        setPreferredSize(size);
         setMaximumSize(size);
 
         // -- Position

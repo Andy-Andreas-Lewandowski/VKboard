@@ -29,8 +29,8 @@ public class Sequencer implements Pianoroll.PlayObserver {
     static boolean isRecording = false;
     static boolean allPlaying = false;
     static int     channelId   = 0;
-    static ArrayList<SequencerChannel> channels = new ArrayList<>();
-    static SequencerChannel            selectedChannel;
+    public static ArrayList<SequencerChannel> channels = new ArrayList<>();
+    public static SequencerChannel            selectedChannel;
 
     // Observer
     static ArrayList<BpmObserver> bpmObserver = new ArrayList<>();
@@ -229,12 +229,13 @@ public class Sequencer implements Pianoroll.PlayObserver {
 
     public static int   getBpm(){return bpm;}
     public static void  setBpm(int bpm){
-        if(bpm <= MAX_BPM && bpm >= MIN_BPM){
+        if(bpm <= MAX_BPM && bpm >= MIN_BPM && !isRecording){
             Sequencer.bpm = bpm;
             notifyOnBpmChange(bpm);
             System.out.println("Bpm was changed to: " + bpm);
         }
     }
+
 
 
 

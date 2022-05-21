@@ -57,6 +57,7 @@ public class BlackKey extends JButton implements Pianoroll.PlayObserver, ActionL
         Dimension size = new Dimension(bkWidth,bkHeight);
         setSize(size);
         setMinimumSize(size);
+        setPreferredSize(size);
         setMaximumSize(size);
 
         // -- Position
