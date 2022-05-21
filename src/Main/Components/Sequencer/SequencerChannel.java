@@ -41,7 +41,7 @@ public class SequencerChannel {
 
     public void clearSequences(){
         for(Byte[] sequence : noteToSequences.values()){
-            Arrays.fill(sequence,0);
+            Arrays.fill(sequence,(byte)0);
         }
     }
 }

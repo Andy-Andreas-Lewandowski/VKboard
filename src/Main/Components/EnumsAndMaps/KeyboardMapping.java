@@ -44,11 +44,12 @@ public class KeyboardMapping {
             KeyToInputCode.SLASH
     );
 
-    public static List<Integer> getAllInputCodes(){
+    public static List<Integer> getAllPianorollInputCodes(){
         List<Integer> inputCodes = new LinkedList<>();
         leftMusicKeys.forEach(key -> inputCodes.add(key.getCode()));
         rightMusicKeys.forEach(key -> inputCodes.add(key.getCode()));
         return inputCodes;
     }
+
 
 }

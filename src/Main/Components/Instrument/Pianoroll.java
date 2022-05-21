@@ -34,7 +34,7 @@ public class Pianoroll {
     public static void loadPreset(int id){
         SynthesizerPreset   preset      = presets.get(id);
         Iterator<Notes>     notes       = preset.getNotes().iterator();
-        Iterator<Integer>   inputCodes  = KeyboardMapping.getAllInputCodes().iterator();
+        Iterator<Integer>   inputCodes  = KeyboardMapping.getAllPianorollInputCodes().iterator();
 
         while(notes.hasNext() && inputCodes.hasNext()){
             Notes   note = notes.next();
@@ -49,13 +49,16 @@ public class Pianoroll {
     public static void loadNextPreset(){loadPreset((presetId+1)%presets.size());}
 
     public static Synthesizer cloneSynthesizer(){return (Synthesizer) synthesizer.clone();}
+    public static Notes getNote(int key){
+        return keyToNote.get(key);
+    }
 
     // Play
     public static void playNote(int code){
         if(isCodeValid(code)) {
             Notes note = keyToNote.get(code);
             synthesizer.playNote(note);
-            notifyOnPlay(note);
+            notifyOnPlay(note,code);
         }
     }
 
@@ -63,7 +66,7 @@ public class Pianoroll {
         if(isCodeValid(code)) {
             Notes note = keyToNote.get(code);
             synthesizer.stopNote(note);
-            notifyOnStop(note);
+            notifyOnStop(note,code);
         }
     }
 
@@ -73,12 +76,12 @@ public class Pianoroll {
 
     // Observer
     public static void subscribe(PianorollObserver o)  {observer.add(o);}
-    public static void notifyOnPlay(Notes note)        {observer.forEach(o -> o.onPlay(note));}
-    public static void notifyOnStop(Notes note)        {observer.forEach(o -> o.onStop(note));}
+    public static void notifyOnPlay(Notes note, int key)        {observer.forEach(o -> o.onPlay(note, key));}
+    public static void notifyOnStop(Notes note, int key)        {observer.forEach(o -> o.onStop(note, key));}
 
     public interface PianorollObserver {
-        void onPlay(Notes note);
-        void onStop(Notes note);
+        void onPlay(Notes note, int key);
+        void onStop(Notes note, int key);
     }
 
     public static void init(){

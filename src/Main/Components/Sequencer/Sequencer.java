@@ -181,13 +181,13 @@ public class Sequencer implements Pianoroll.PianorollObserver {
     }
 
     @Override
-    public void onPlay(Notes note) {
+    public void onPlay(Notes note, int key) {
         if(isRecording) {
             selectedChannel.addNoteActivation(note);
         }
     }
     @Override
-    public void onStop(Notes note) {
+    public void onStop(Notes note, int key) {
         if(isRecording) {
             selectedChannel.addNoteDeactivation(note);
         }
