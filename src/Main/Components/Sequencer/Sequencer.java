@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class Sequencer implements Pianoroll.PianorollObserver {
+public class Sequencer implements Pianoroll.PlayObserver {
     private Sequencer(){}
     private static Sequencer sequencer = new Sequencer();
     public static Sequencer getInstance(){return sequencer;}
@@ -18,6 +18,8 @@ public class Sequencer implements Pianoroll.PianorollObserver {
     // Beat
     public static final int MINUTE_IN_MILLI = 60000;
     public static final int MAX_BEATS = 360;
+    public static final int MAX_BPM = 120;
+    public static final int MIN_BPM = 20;
     public static final int STEPS_PER_BEAT = 32;
 
     static int bpm = 60;
@@ -30,6 +32,8 @@ public class Sequencer implements Pianoroll.PianorollObserver {
     static ArrayList<SequencerChannel> channels = new ArrayList<>();
     static SequencerChannel            selectedChannel;
 
+    // Observer
+    static ArrayList<BpmObserver> bpmObserver = new ArrayList<>();
 
 
 
@@ -215,6 +219,37 @@ public class Sequencer implements Pianoroll.PianorollObserver {
         for(int i = 0; i<4; i++) channels.add(new SequencerChannel());
         loadChannel(0);
     }
+
+
+
+
+
+
+
+
+    public static int   getBpm(){return bpm;}
+    public static void  setBpm(int bpm){
+        if(bpm <= MAX_BPM && bpm >= MIN_BPM){
+            Sequencer.bpm = bpm;
+            notifyOnBpmChange(bpm);
+            System.out.println("Bpm was changed to: " + bpm);
+        }
+    }
+
+
+
+
+
+
+
+
+    // - Observer
+    // -- BPM Observer
+    public static void subscribeToBpm(BpmObserver o){bpmObserver.add(o);}
+    public static void notifyOnBpmChange(int id){bpmObserver.forEach(o -> o.onBpmChange(id));}
+
+    public interface BpmObserver {void onBpmChange(int bpm);}
+
 
 
 }

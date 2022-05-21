@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class BlackKey extends JButton implements Pianoroll.PianorollObserver, ActionListener {
+public class BlackKey extends JButton implements Pianoroll.PlayObserver, ActionListener {
     public   static Color       keyColor                = Color.BLACK;
     public   static int         bkWidth = 0;
     public   static int         bkHeight = 0;
@@ -83,7 +83,7 @@ public class BlackKey extends JButton implements Pianoroll.PianorollObserver, Ac
         note = Pianoroll.getNote(keyMapping);
     }
     public void subscribe(){
-        Pianoroll.subscribe(this);
+        Pianoroll.subscribeToPlay(this);
     }
 
 

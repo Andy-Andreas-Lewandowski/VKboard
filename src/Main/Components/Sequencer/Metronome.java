@@ -24,7 +24,6 @@ public class Metronome{
     public static boolean getIsPlaying(){return isPlaying;}
 
     public void startMetronome(){
-        System.out.println(isPlaying);
         if(!isPlaying){
             isPlaying = true;
             new MetronomePlayer().start();

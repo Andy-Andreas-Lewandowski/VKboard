@@ -8,10 +8,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class WhiteKey extends JButton implements Pianoroll.PianorollObserver {
+public class WhiteKey extends JButton implements Pianoroll.PlayObserver {
     public static  Color       keyColor    = Color.WHITE;
     public static  int         wkWidth  = 0;
     public static  int         wkHeight = 0;
@@ -74,7 +72,7 @@ public class WhiteKey extends JButton implements Pianoroll.PianorollObserver {
         note = Pianoroll.getNote(keyMapping);
     }
     public void subscribe(){
-        Pianoroll.subscribe(this);
+        Pianoroll.subscribeToPlay(this);
     }
 
 

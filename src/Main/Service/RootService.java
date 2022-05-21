@@ -25,7 +25,7 @@ public class RootService {
 
         sequencer = Sequencer.getInstance();
         sequencer.init();
-        pianoroll.subscribe(sequencer);
+        pianoroll.subscribeToPlay(sequencer);
 
         metronome = Metronome.getInstance();
         metronome.init();

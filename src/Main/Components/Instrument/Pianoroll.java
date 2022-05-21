@@ -20,7 +20,7 @@ public class Pianoroll {
 
     // Presets
     static int presetId = 0;
-    static ArrayList<SynthesizerPreset> presets = new ArrayList<>();
+    public static ArrayList<SynthesizerPreset> presets = new ArrayList<>();
 
     // Synth
     static Synthesizer synthesizer = new Synthesizer();
@@ -28,7 +28,8 @@ public class Pianoroll {
     // Access Maps
     static HashMap<Integer,Notes> keyToNote = new HashMap<>();
     // Listener
-    static ArrayList<PianorollObserver> observer = new ArrayList<>();
+    static ArrayList<PlayObserver>       playObserver       = new ArrayList<>();
+    static ArrayList<InstrumentObserver> instrumentObserver = new ArrayList<>();
 
     // Setup
     public static void loadPreset(int id){
@@ -44,6 +45,7 @@ public class Pianoroll {
 
         synthesizer.loadPreset(preset);
         presetId = id;
+        notifyOnInstrumentChange(presetId);
         System.out.println(preset.toString() + " is loaded!");
     }
     public static void loadNextPreset(){loadPreset((presetId+1)%presets.size());}
@@ -74,15 +76,20 @@ public class Pianoroll {
         return keyToNote.getOrDefault(code,null) != null;
     }
 
-    // Observer
-    public static void subscribe(PianorollObserver o)  {observer.add(o);}
-    public static void notifyOnPlay(Notes note, int key)        {observer.forEach(o -> o.onPlay(note, key));}
-    public static void notifyOnStop(Notes note, int key)        {observer.forEach(o -> o.onStop(note, key));}
+    // - Observer
+    // -- Play Observer
+    public static void subscribeToPlay(PlayObserver o)  {playObserver.add(o);}
+    public static void notifyOnPlay(Notes note, int key){playObserver.forEach(o -> o.onPlay(note, key));}
+    public static void notifyOnStop(Notes note, int key){playObserver.forEach(o -> o.onStop(note, key));}
 
-    public interface PianorollObserver {
-        void onPlay(Notes note, int key);
-        void onStop(Notes note, int key);
-    }
+    public interface PlayObserver {void onPlay(Notes note, int key); void onStop(Notes note, int key);}
+
+    // -- Instrument Observer
+    public static void subscribeToInstrument(InstrumentObserver o){instrumentObserver.add(o);}
+    public static void notifyOnInstrumentChange(int id){instrumentObserver.forEach(o -> o.onInstrumentChange(id));}
+
+    public interface InstrumentObserver {void onInstrumentChange(int index);}
+
 
     public static void init(){
         presets.clear();

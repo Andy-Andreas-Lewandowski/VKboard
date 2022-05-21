@@ -22,6 +22,7 @@ public abstract class SynthesizerPreset {
     public int getBank(){return bank;}
     public int getInstrument(){return instrument;}
     public boolean getIsDrumset(){return isDrumset;}
+    public String getName(){return name;}
 
     public String toString(){
         return name;
