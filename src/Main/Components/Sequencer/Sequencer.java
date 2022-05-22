@@ -26,31 +26,32 @@ public class Sequencer implements Pianoroll.PlayObserver {
     static int beatsInUse = 5;
 
     // Sequence Channels
-    static boolean isRecording = false;
-    static boolean allPlaying = false;
+    public static boolean isRecording = false;
+    public static boolean allPlaying = false;
     static int     channelId   = 0;
     public static ArrayList<SequencerChannel> channels = new ArrayList<>();
     public static SequencerChannel            selectedChannel;
 
     // Observer
-    static ArrayList<BpmObserver> bpmObserver = new ArrayList<>();
-
+    static ArrayList<BpmObserver>             bpmObserver = new ArrayList<>();
+    static ArrayList<SelectedChannelObserver> selectedChannelObserver = new ArrayList();
 
 
     // Setup
     public static void synchronizeSequencer(){}
-    public static void loadSynthesizerToSequencer(){
-        if(sequencer.isNotBlocked()) {
+    public static void loadSynthesizerToSequencer(int channelId){
+        if(sequencer.isNotBlocked() && !channels.get(channelId).isPlaying) {
             Synthesizer synth = Pianoroll.cloneSynthesizer();
-            selectedChannel.loadSynthesizer(synth);
+            channels.get(channelId).loadSynthesizer(synth);
 
-            System.out.println("Synth loaded to channel!");
+            System.out.println("Synth loaded to channel No." + channelId + "!");
         }
     }
     public static void loadChannel(int id){
         if(isChannelIdValid(id) && !isRecording) {
             channelId = id;
             selectedChannel = channels.get(id);
+            notifyOnChannelChange();
         }
     }
     public static void loadNextSequencer(){
@@ -77,7 +78,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
             allPlaying = true;
             for (SequencerChannel channel : channels) {
                 channel.noteToSequences.keySet().forEach(note -> threads.add(new PlayNote(channel, note)));
-                channel.isPlaying = true;
+                channel.setIsPlaying(true);
             }
             new PlaySequence(threads).start();
         }
@@ -85,25 +86,34 @@ public class Sequencer implements Pianoroll.PlayObserver {
     public void stopAllSequencer(){
         allPlaying = false;
         for(SequencerChannel channel : channels){
-            channel.isPlaying = false;
+            channel.setIsPlaying(false);
         }
     }
 
-
-
-    public void playThisSequence(){
-        if(isNotBlocked()){
+    public void playSequence(int channelId){
+        if(isNotBlocked() && !channels.get(channelId).noteToSequences.isEmpty()){
             List threads = new ArrayList<>();
-            selectedChannel.noteToSequences.keySet().forEach(note -> threads.add(new PlayNote(selectedChannel,note)));
-            selectedChannel.isPlaying = true;
+            channels.get(channelId).noteToSequences.keySet().forEach(note -> threads.add(new PlayNote(selectedChannel,note)));
+            channels.get(channelId).setIsPlaying(true);
             new PlaySequence(threads).start();
 
 
-            System.out.println("Started Playing!");
+            System.out.println("Channel No." + channelId + " started playing!");
         }
     }
+
+    public void playThisSequence(){
+        if(isNotBlocked()){
+            playSequence(channelId);
+        }
+    }
+
+    public void stopSequencer(int sequeceId){
+        channels.get(sequeceId).setIsPlaying(false);
+    }
+
     public void stopThisSequence(){
-        selectedChannel.isPlaying = false;
+        selectedChannel.setIsPlaying(false);
         System.out.println("Playing stopped!");
     }
 
@@ -250,7 +260,12 @@ public class Sequencer implements Pianoroll.PlayObserver {
     public static void notifyOnBpmChange(int id){bpmObserver.forEach(o -> o.onBpmChange(id));}
 
     public interface BpmObserver {void onBpmChange(int bpm);}
+    // -- Channel Observer
 
 
+    public static void subscribeToSelectedChannel(SelectedChannelObserver o) {selectedChannelObserver.add(o);}
+    public static void notifyOnChannelChange()                               {selectedChannelObserver.forEach(o->o.onSelectedChannelChange(channelId));}
+
+    public interface SelectedChannelObserver {void onSelectedChannelChange(int channelNo); void onIsRecordingChange();}
 
 }

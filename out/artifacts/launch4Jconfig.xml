@@ -4,7 +4,7 @@
   <headerType>gui</headerType>
   <jar>C:\Users\RexLupie\IdeaProjects\Client\VKboard\out\artifacts\VKboard_jar\VKboard.jar</jar>
   <outfile>C:\Users\RexLupie\IdeaProjects\Client\VKboard\out\artifacts\VKboard_jar\VKboard.exe</outfile>
-  <errTitle>Please install Java first!</errTitle>
+  <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
@@ -15,7 +15,7 @@
   <manifest></manifest>
   <icon></icon>
   <jre>
-    <path>C:\Users\RexLupie\.jdks\openjdk-14.0.1</path>
+    <path>openjdk-14.0.1</path>
     <bundledJre64Bit>false</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
     <minVersion></minVersion>

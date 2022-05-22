@@ -40,7 +40,7 @@ public class KeyInputHandler implements KeyListener {
             }
         // Num 2 - Connect Instrument
         } else if (e.getExtendedKeyCode() == 98) {
-            Sequencer.loadSynthesizerToSequencer();
+            Sequencer.loadSynthesizerToSequencer(0);
 
         // Num 3 - Clear selected Channel.*/
         } else if (e.getExtendedKeyCode() == 99) {

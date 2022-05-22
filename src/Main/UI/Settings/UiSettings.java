@@ -70,6 +70,7 @@ public class UiSettings extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 if (previousSelectedId != getSelectedIndex()) {
                     Pianoroll.loadPreset(getSelectedIndex());
+                    previousSelectedId = getSelectedIndex();
                 }
             }
         }
@@ -91,6 +92,7 @@ public class UiSettings extends JPanel {
 
             //BEHAVIOR
             setFocusable(false);
+
             Sequencer.subscribeToBpm(this);
             addChangeListener(new BpmSpinner.OnBpmSelect());
         }
@@ -101,6 +103,8 @@ public class UiSettings extends JPanel {
                 if ((Integer) getValue() != previousBpm) {
                     Sequencer.setBpm((Integer) getValue());
                 }
+                setVisible(false);
+                setVisible(true);
             }
         }
 
@@ -108,6 +112,7 @@ public class UiSettings extends JPanel {
         public void onBpmChange(int bpm) {
             previousBpm = bpm;
             setValue(previousBpm);
+
         }
     }
 
