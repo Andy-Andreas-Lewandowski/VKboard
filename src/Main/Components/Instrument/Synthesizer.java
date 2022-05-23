@@ -11,7 +11,7 @@ public class Synthesizer implements Cloneable{
     ArrayList<javax.sound.midi.Synthesizer>      synthesizer            = new ArrayList<>();
     ArrayList<ShortMessage>                      messages               = new ArrayList<>();
     // Loaded Synth preset
-    SynthesizerPreset preset;
+    public SynthesizerPreset preset;
     // Maps for quick access
     boolean isLowerOctave = true;
     HashMap<Notes,Receiver>                      noteToReceiver         = new HashMap<>();

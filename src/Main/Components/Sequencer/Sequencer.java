@@ -23,7 +23,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
     public static final int STEPS_PER_BEAT = 32;
 
     static int bpm = 60;
-    static int beatsInUse = 5;
+    public static int beatsInUse = 5;
 
     // Sequence Channels
     public static boolean isRecording = false;
@@ -38,12 +38,17 @@ public class Sequencer implements Pianoroll.PlayObserver {
 
 
     // Setup
-    public static void synchronizeSequencer(){}
+    public static void synchronizeSequencer(int channelNo){
+        SequencerChannel channel = channels.get(channelNo);
+        if(channel != selectedChannel){
+            channel.setStep(selectedChannel.absoluteStep);
+        }
+    }
     public static void loadSynthesizerToSequencer(int channelId){
         if(sequencer.isNotBlocked() && !channels.get(channelId).isPlaying) {
             Synthesizer synth = Pianoroll.cloneSynthesizer();
             channels.get(channelId).loadSynthesizer(synth);
-
+            notifyOnChannelChange();
             System.out.println("Synth loaded to channel No." + channelId + "!");
         }
     }
@@ -52,6 +57,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
             channelId = id;
             selectedChannel = channels.get(id);
             notifyOnChannelChange();
+            System.out.println("Channel No."+ channelId + " was selected!");
         }
     }
     public static void loadNextSequencer(){
@@ -67,6 +73,13 @@ public class Sequencer implements Pianoroll.PlayObserver {
         return id < channels.size();
     }
 
+    public static void setBeatsInUse(int beatsInUse) {
+        if(beatsInUse < MAX_BEATS && !isRecording){
+            Sequencer.beatsInUse = beatsInUse;
+            notifyOnBpmChange(bpm);
+        }
+    }
+
     // ###########
     // # Playing #
     // ###########
@@ -80,7 +93,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
                 channel.noteToSequences.keySet().forEach(note -> threads.add(new PlayNote(channel, note)));
                 channel.setIsPlaying(true);
             }
-            new PlaySequence(threads).start();
+            //new PlaySequence(threads,channel).start();
         }
     }
     public void stopAllSequencer(){
@@ -90,15 +103,16 @@ public class Sequencer implements Pianoroll.PlayObserver {
         }
     }
 
-    public void playSequence(int channelId){
-        if(isNotBlocked() && !channels.get(channelId).noteToSequences.isEmpty()){
+    public void playSequence(int channelNo){
+        if(!channels.get(channelNo).isPlaying && !channels.get(channelNo).noteToSequences.isEmpty()&& !isRecording){
+            SequencerChannel channel = channels.get(channelNo);
             List threads = new ArrayList<>();
-            channels.get(channelId).noteToSequences.keySet().forEach(note -> threads.add(new PlayNote(selectedChannel,note)));
-            channels.get(channelId).setIsPlaying(true);
-            new PlaySequence(threads).start();
+            channel.noteToSequences.keySet().forEach(note -> threads.add(new PlayNote(channel,note)));
+            channel.setIsPlaying(true);
+            new PlaySequence(threads,channel).start();
 
 
-            System.out.println("Channel No." + channelId + " started playing!");
+            System.out.println("Channel No." + channelNo + " started playing!");
         }
     }
 
@@ -118,17 +132,19 @@ public class Sequencer implements Pianoroll.PlayObserver {
     }
 
     public class PlaySequence extends Thread{
+        SequencerChannel channel;
         ExecutorService threadExecutor;
         List<PlayNote> threads;
 
-        public PlaySequence(List<PlayNote> threads){
+        public PlaySequence(List<PlayNote> threads, SequencerChannel channel){
+            this.channel = channel;
             threadExecutor = Executors.newFixedThreadPool(threads.size());
             this.threads = threads;
         }
 
         @Override
         public void run(){
-            while(selectedChannel.isPlaying || allPlaying){
+            while(channel.isPlaying || allPlaying){
                 long stepTime = (MINUTE_IN_MILLI / bpm) / STEPS_PER_BEAT;
                 long startTime = System.currentTimeMillis();
                 try {
@@ -140,7 +156,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
                 catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                selectedChannel.incrementStep();
+                channel.incrementStep();
             }
             threadExecutor.shutdown();
         }
@@ -148,11 +164,13 @@ public class Sequencer implements Pianoroll.PlayObserver {
     }
 
     public class PlayNote extends Thread{
+        SequencerChannel channel;
         Notes note;
         Synthesizer synth;
         Byte[] sequence;
 
         public PlayNote(SequencerChannel sequencerChannel, Notes note){
+            channel = sequencerChannel;
             this.note = note;
             this.synth = sequencerChannel.synthesizer;
             this.sequence = sequencerChannel.noteToSequences.get(note);
@@ -160,7 +178,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
 
         @Override
         public void run(){
-            byte command = sequence[selectedChannel.currentStep];
+            byte command = sequence[channel.absoluteStep];
             if(command == -1){
                 synth.playNote(note);
             }
@@ -180,13 +198,14 @@ public class Sequencer implements Pianoroll.PlayObserver {
         if(isNotBlocked()) {
             isRecording = true;
             new RecorderThread().start();
-
+            notifyOnIsRecording();
             System.out.println("Recording started!");
         }
     }
 
     public void stopRecording(){
         isRecording = false;
+        notifyOnIsRecording();
         System.out.println("Recording stopped!");
     }
 
@@ -265,6 +284,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
 
     public static void subscribeToSelectedChannel(SelectedChannelObserver o) {selectedChannelObserver.add(o);}
     public static void notifyOnChannelChange()                               {selectedChannelObserver.forEach(o->o.onSelectedChannelChange(channelId));}
+    public static void notifyOnIsRecording()                                 {selectedChannelObserver.forEach(o->o.onIsRecordingChange());}
 
     public interface SelectedChannelObserver {void onSelectedChannelChange(int channelNo); void onIsRecordingChange();}
 

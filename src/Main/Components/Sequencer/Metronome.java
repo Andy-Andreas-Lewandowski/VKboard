@@ -69,8 +69,8 @@ public class Metronome{
             MidiChannel[] channels = synthesizer.getChannels();
             channels[0].programChange(128,121);
 
-            tickOn.setMessage(ShortMessage.NOTE_ON,0, Notes.B4.getCode(),30);
-            tickOff.setMessage(ShortMessage.NOTE_OFF,0, Notes.B4.getCode(),30);
+            tickOn.setMessage(ShortMessage.NOTE_ON,0, Notes.B4.getCode(),40);
+            tickOff.setMessage(ShortMessage.NOTE_OFF,0, Notes.B4.getCode(),40);
 
             receiver = synthesizer.getReceiver();
 

@@ -19,6 +19,7 @@ public class KeyInputHandler implements KeyListener {
     Metronome metronome = Metronome.getInstance();
 
     public KeyInputHandler(RootService root){
+
         this.root = root;
 
     }

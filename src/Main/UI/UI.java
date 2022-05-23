@@ -1,27 +1,21 @@
 package Main.UI;
 
-import Main.Components.Sequencer.Sequencer;
-import Main.Components.Sequencer.SequencerChannel;
 import Main.Service.RootService;
 import Main.UI.Keys.BlackKey;
 import Main.UI.Keys.WhiteKey;
-import Main.UI.Settings.SequenceChannelController;
+import Main.UI.Settings.SequenceChannelController.SequenceChannelController;
 import Main.UI.Settings.UiSettings;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 
 
 public class UI {
     public final static int APPROX_WIDTH = 1280;
-    public final static int APPROX_HEIGHT = 800;
+    public final static int APPROX_HEIGHT = 850;
 
     public final static int APPROX_BOTTOM_COMPONENT_HEIGHT = (APPROX_WIDTH/14)*4;
     public final static int APPROX_TOP_COMPONENT_HEIGHT = (APPROX_HEIGHT - APPROX_BOTTOM_COMPONENT_HEIGHT) - 50;
@@ -33,22 +27,24 @@ public class UI {
     public static final Font TITEL_FONT = new Font("Verdana",Font.BOLD,12);
     public static final Font SUBGROUP_FONT = new Font("Verdana",Font.BOLD,14);
     public static final Font GROUP_FONT = new Font("Verdana",Font.BOLD,16);
+    public static final Font PRESET_FONT = new Font("Verdana",Font.BOLD,19);
+
     public static final Border TITEL_BORDER = BorderFactory.createCompoundBorder();
     public static final Border SUBGROUP_BORDER = BorderFactory.createLineBorder(Color.BLACK,1);
     public static final Border GROUP_BORDER = BorderFactory.createEtchedBorder(1);
     static Keyboardroll kb;
 
     RootService rootService;
-    MainFrame frame;
+    public static MainFrame frame;
     Keyboardroll keyboardroll;
     KeyboardrollControlPane splitPane;
 
     public UI(RootService rootService){
         this.rootService = rootService;
-        buildUI();
+        frame = buildUI();
     }
 
-    public JFrame buildUI(){
+    public MainFrame buildUI(){
         frame = new MainFrame(new KeyInputHandler(rootService));
         frame.repaint();
 
@@ -58,7 +54,10 @@ public class UI {
         return frame;
     }
 
-
+    // JSpinner are focus suckers... to reset the focus back on mainframe
+    public static void setFocusToFrame(){
+        frame.requestFocus();
+    }
 
 
 
@@ -91,8 +90,8 @@ public class UI {
             // -- GENERAL CONSTRAINTS
             gbc.gridwidth = 0;
             gbc.gridheight = 1;
-            gbc.fill = GridBagConstraints.NONE;
-            gbc.anchor = GridBagConstraints.PAGE_END;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 
 
             // -- TOP
@@ -125,21 +124,6 @@ public class UI {
 
 
 
-/*
-    class KeyboardrollControlPane extends JPanel{
-        public KeyboardrollControlPane(){
-            // - LAYOUT
-            setSize(APPROX_WIDTH,APPROX_HEIGHT);
-
-            setLayout(new GridLayout(2,1));
-            add(new ControlPanel());
-            add(new Keyboardroll());
-        }
-    }
-*/
-
-
-
     // ############
     // # Settings #
     // ############
@@ -148,12 +132,11 @@ public class UI {
             // General Layout
             GridBagLayout layout = new GridBagLayout();
             GridBagConstraints constraints = new GridBagConstraints();
-            constraints.gridwidth = 1;
-            constraints.gridheight = 0;
+            constraints.gridwidth = 2;
+            constraints.gridheight = 1;
             constraints.insets = new Insets(0,0,0,0);
             constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.anchor = GridBagConstraints.PAGE_START;
-
 
 
             // -- LEFT COMPONENT
@@ -177,22 +160,9 @@ public class UI {
             layout.addLayoutComponent(sequenceChannelController,constraints);
             add(sequenceChannelController);
 
-            /*setLayout(new GridLayout(1,3));
-            add(new UiSettings());
-            add(new SequenceChannelController());*/
         }
 
     }
-
-    // #############
-    // # Sequencer #
-    // #############
-
-
-
-
-
-
 
 
     // ################

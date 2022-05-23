@@ -123,12 +123,12 @@ public abstract class SynthesizerPreset {
     public static class b extends SynthesizerPreset {
         public b(){
             velocity = 20;
-            bank = 0;
-            instrument = 16;
-            name = "or1 1";
+            bank = 1024;
+            instrument = 115;
+            name = "Castanets";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
 
@@ -136,99 +136,113 @@ public abstract class SynthesizerPreset {
         public c(){
             velocity = 20;
             bank = 0;
-            instrument = 17;
-            name = "or 1 2";
+            instrument = 117;
+            name = "Melo Tom 1";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
     public static class d extends SynthesizerPreset {
         public d(){
             velocity = 20;
             bank = 0;
-            instrument = 18;
-            name = "or 1 3";
+            instrument = 119;
+            name = "Reverse Cym";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
     public static class e extends SynthesizerPreset {
         public e(){
             velocity = 20;
-            bank = 2048;
-            instrument = 16;
-            name = "60s organ";
+            bank = 0;
+            instrument = 55;
+            name = "Orchestra";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
     public static class f extends SynthesizerPreset {
         public f(){
             velocity = 20;
             bank = 0;
-            instrument = 20;
-            name = "reed or";
+            instrument = 74;
+            name = "Rec";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
     public static class g extends SynthesizerPreset {
         public g(){
-            velocity = 20;
-            bank = 1024;
-            instrument = 16;
-            name = "det 1";
+            velocity = 30;
+            bank = 0;
+            instrument = 115;
+            name = "Woodb";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
     public static class h extends SynthesizerPreset {
         public h(){
             velocity = 20;
-            bank = 1024;
-            instrument = 17;
-            name = "det 2";
+            bank = 0;
+            instrument = 126;
+            name = "Appla";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
     public static class i extends SynthesizerPreset {
         public i(){
             velocity = 20;
-            bank = 4096;
-            instrument = 16;
-            name = "or4";
+            bank = 384;
+            instrument = 126;
+            name = "Punch";
 
+            notes.addAll(Notes.getOctave(2));
             notes.addAll(Notes.getOctave(3));
-            notes.addAll(Notes.getOctave(4));
         }
     }
     public static class j extends SynthesizerPreset {
         public j(){
             velocity = 20;
-            bank = 2048;
-            instrument = 19;
-            name = "ch or 3";
+            bank = 0;
+            instrument = 118;
+            name = "Dr Syn";
 
             notes.addAll(Notes.getOctave(3));
             notes.addAll(Notes.getOctave(4));
         }
     }
+    public static class k extends SynthesizerPreset {
+        public k(){
+            velocity = 20;
+            bank = 0;
+            instrument = 89;
+            name = "warm pad";
+
+            notes.addAll(Notes.getOctave(3));
+            notes.addAll(Notes.getOctave(4));
+        }
+    }
+
     public static ArrayList<SynthesizerPreset> getPresets(){
         ArrayList<SynthesizerPreset> presets = new ArrayList<>();
         presets.add(new GrandPiano());
+        presets.add(new Guitar());
         presets.add(new Viola());
         presets.add(new Trumpet());
         presets.add(new Whistle());
         presets.add(new Harpsicord());
         presets.add(new Vibraphone());
-       /* presets.add(new b());
+        presets.add(new ClassicOrgan());
+/*        presets.add(new b());
         presets.add(new c());
         presets.add(new d());
         presets.add(new e());
@@ -236,7 +250,8 @@ public abstract class SynthesizerPreset {
         presets.add(new g());
         presets.add(new h());
         presets.add(new i());
-        presets.add(new j());*/
+        presets.add(new j());
+        presets.add(new k());*/
 
         return presets;
 
