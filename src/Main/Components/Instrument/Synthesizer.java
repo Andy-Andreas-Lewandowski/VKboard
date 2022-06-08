@@ -6,6 +6,10 @@ import Main.Components.Preset.SynthesizerPreset;
 import javax.sound.midi.*;
 import java.util.*;
 
+/**
+ * Class that manages Javax.Sound.Midi components and combines them into a structure that can play sounds out of midi
+ * messages. Must be configured via SynthesizerPreset before use.
+ */
 public class Synthesizer implements Cloneable{
     // Soundobjects for quick building
     ArrayList<javax.sound.midi.Synthesizer>      synthesizer            = new ArrayList<>();
@@ -13,11 +17,13 @@ public class Synthesizer implements Cloneable{
     // Loaded Synth preset
     public SynthesizerPreset preset;
     // Maps for quick access
-    boolean isLowerOctave = true;
     HashMap<Notes,Receiver>                      noteToReceiver         = new HashMap<>();
     HashMap<Notes,ShortMessage>                  noteToPlayMessage      = new HashMap<>();
     HashMap<Notes,ShortMessage>                  noteToStopMessage      = new HashMap<>();
 
+    /**
+     * Initializes Javax.Sound.Synthesizer and Midi ShortMessages.
+     */
     public Synthesizer(){
         for(int i = 0 ; i < 2 ; i++){
             try {
@@ -34,6 +40,10 @@ public class Synthesizer implements Cloneable{
         }
     }
 
+    /**
+     * Takes a SynthesizerPreset and initializes Javax.Sound.Midi.Synthesizer channels with the given preset.
+     * @param preset - SynthesizerPreset to be loaded into Synthesizer
+     */
     public void loadPreset(SynthesizerPreset preset){
         if(preset.getIsDrumset()){
 
@@ -96,6 +106,11 @@ public class Synthesizer implements Cloneable{
     }
 
 
+    /**
+     * Sends a NoteOn ShortMessage for given Note to Javax.Sound.Midi.Synthesizer.
+     * Note must be included in initialized preset.
+     * @param note - Note to be played
+     */
     public void playNote(Notes note){
         Receiver receiver = noteToReceiver.get(note);
         if(receiver == null) return;
@@ -103,6 +118,11 @@ public class Synthesizer implements Cloneable{
         receiver.send(on,-1);
     }
 
+    /**
+     * Sends a NoteOff ShortMessage for given Note to Javax.Sound.Midi.Synthesizer.
+     * Note must be included in initialized preset.
+     * @param note - Note to be played
+     */
     public void stopNote(Notes note){
         Receiver receiver  = noteToReceiver.get(note);
         if(receiver == null) return;
@@ -110,6 +130,9 @@ public class Synthesizer implements Cloneable{
         receiver.send(off,-1);
     }
 
+    /**
+     * @return - a deep copy of this object.
+     */
     @Override
     public Object clone(){
         Synthesizer clone = new Synthesizer();

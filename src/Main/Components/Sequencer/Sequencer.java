@@ -10,9 +10,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Singleton to organize sequencer and to the sequencer related objects like Metronome and SequencerChannel. It also
+ * manages shared resources related to sequencing, recording and replaying such as beats and bpms.
+ */
 public class Sequencer implements Pianoroll.PlayObserver {
     private Sequencer(){}
-    private static Sequencer sequencer = new Sequencer();
+    private static final Sequencer sequencer = new Sequencer();
     public static Sequencer getInstance(){return sequencer;}
 
     // Beat
@@ -28,7 +32,7 @@ public class Sequencer implements Pianoroll.PlayObserver {
     // Sequence Channels
     public static boolean isRecording = false;
     public static boolean allPlaying = false;
-    static int     channelId   = 0;
+    static int            channelId   = 0;
     public static ArrayList<SequencerChannel> channels = new ArrayList<>();
     public static SequencerChannel            selectedChannel;
 
@@ -37,13 +41,22 @@ public class Sequencer implements Pianoroll.PlayObserver {
     static ArrayList<SelectedChannelObserver> selectedChannelObserver = new ArrayList();
 
 
-    // Setup
-    public static void synchronizeSequencer(int channelNo){
-        SequencerChannel channel = channels.get(channelNo);
+    /**
+     * Sets step, beat and step in beat of channel with given index in channels to the state of the selected
+     * SequencerChannel.
+     * @param channelId - SequencerChannel index.
+     */
+    public static void synchronizeSequencer(int channelId){
+        SequencerChannel channel = channels.get(channelId);
         if(channel != selectedChannel){
             channel.setStep(selectedChannel.absoluteStep);
         }
     }
+
+    /**
+     * Sets Synthesizer object of channel with given index to the deep-copy of the Synthesizer of Pianoroll.
+     * @param channelId - SequencerChannel index.
+     */
     public static void loadSynthesizerToSequencer(int channelId){
         if(sequencer.isNotBlocked() && !channels.get(channelId).isPlaying) {
             Synthesizer synth = Pianoroll.cloneSynthesizer();
@@ -52,17 +65,23 @@ public class Sequencer implements Pianoroll.PlayObserver {
             System.out.println("Synth loaded to channel No." + channelId + "!");
         }
     }
-    public static void loadChannel(int id){
-        if(isChannelIdValid(id) && !isRecording) {
-            channelId = id;
-            selectedChannel = channels.get(id);
+
+    /**
+     * Sets selectedChannel to object of channel with given index.
+     * @param channelId - SequencerChannel index
+     */
+    public static void loadChannel(int channelId){
+        if(isChannelIdValid(channelId) && !isRecording) {
+            Sequencer.channelId = channelId;
+            selectedChannel = channels.get(channelId);
             notifyOnChannelChange();
-            System.out.println("Channel No."+ channelId + " was selected!");
+            System.out.println("Channel No."+ Sequencer.channelId + " was selected!");
         }
     }
     public static void loadNextSequencer(){
         loadChannel((channelId+1) % channels.size());
     }
+
     public static void clearSelectedChannel(){
         if(sequencer.isNotBlocked()){
             selectedChannel.clearSequences();
